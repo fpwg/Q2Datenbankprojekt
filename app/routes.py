@@ -7,6 +7,8 @@ from app.models import User
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
+from email_validator import validate_email
+
 @app.route('/')
 @app.route('/index')
 @login_required
@@ -55,21 +57,30 @@ def register():
 @login_required
 @app.route('/usersettings', methods=['GET', 'POST'])
 def usersettings():
+    print('a')
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
     form = UserSettingsForm()
     if form.validate_on_submit():
+        print ('b')
         if not current_user.check_password(form.confirmation.data):
             return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Wrong password, no changes made')
         username = form.change_username.data
         email = form.change_email.data
         password=form.change_password.data
         if email:
-            current_user.email=email
+            if validate_email(email):
+                current_user.email=email
+            else:
+                return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'No valid imput')
         if password:
             current_user.set_password(password)
         if username:
-            current_user.username=username
+            if len(username)>2:
+                current_user.username=username
+            else:
+                db.session.commit()
+                return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'No valid imput')
         db.session.commit()
         return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Your changes are made!')
     return render_template('usersettings.html', title='Settings', form=UserSettingsForm())

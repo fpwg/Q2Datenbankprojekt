@@ -29,9 +29,9 @@ class RegistrationForm(FlaskForm):
 
 
 class UserSettingsForm(FlaskForm):
-    change_username = StringField('New Username', validators=[Length(min=3, max=100)])
-    change_email = StringField('New Email', validators=[Email()])
-    change_password = PasswordField('New Password')
+    change_username = StringField('New Username')
+    change_email = StringField('New Email')
+    change_password = PasswordField('Confirm New Password')
     change_password_confirm = PasswordField('Confirm New Password', validators=[EqualTo('change_password')])
     confirmation = PasswordField('Confirm with old password', validators=[DataRequired()])
     submit = SubmitField('save changes')
