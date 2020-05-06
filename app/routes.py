@@ -7,7 +7,7 @@ from app.models import User
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
-from email_validator import validate_email
+from email_validator import validate_email, EmailNotValidError
 
 @app.route('/')
 @app.route('/index')
@@ -69,9 +69,10 @@ def usersettings():
         email = form.change_email.data
         password=form.change_password.data
         if email:
-            if validate_email(email):
-                current_user.email=email
-            else:
+            try:
+                valid = validate_email(email)
+                current_user.email=valid.email
+            except EmailNotValidError:
                 return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'No valid imput')
         if password:
             current_user.set_password(password)
