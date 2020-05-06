@@ -1,4 +1,4 @@
 **/__pycache__
 /venv
 **/.DS_STORE
-app.db
+**/app.db
