@@ -1,0 +1,27 @@
+{% block content %}
+    <h1>Change Settings</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.change_username.label }}<br>
+            {{ form.change_username(size=32) }}
+        </p>
+        <p>
+            {{ form.change_email.label }}<br>
+            {{ form.change_email(size=32) }}
+        </p>
+        <p>
+            {{ form.change_password.label }}<br>
+            {{ form.change_password(size=32) }}
+        </p>
+        <p>
+            {{ form.change_password_confirm.label }}<br>
+            {{ form.change_password_confirm(size=32) }}
+        </p>
+        <p>
+            {{ form.confirmation.label }}<br>
+            {{ form.confirmation(size=32) }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
