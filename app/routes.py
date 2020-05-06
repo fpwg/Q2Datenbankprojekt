@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request
 from app import app, db
 
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, UserSettingsForm
 
 from app.models import User
 from flask_login import current_user, login_user, logout_user, login_required
@@ -31,13 +31,13 @@ def login():
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
-    
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
-  
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -51,3 +51,25 @@ def register():
         db.session.commit()
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=RegistrationForm())
+
+@login_required
+@app.route('/usersettings', methods=['GET', 'POST'])
+def usersettings():
+    if not current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = UserSettingsForm()
+    if form.validate_on_submit():
+        if not current_user.check_password(form.confirmation.data):
+            return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Wrong password, no changes made')
+        username = form.change_username.data
+        email = form.change_email.data
+        password=form.change_password.data
+        if email:
+            current_user.email=email
+        if password:
+            current_user.set_password(password)
+        if username:
+            current_user.username=username
+        db.session.commit()
+        return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Your changes are made!')
+    return render_template('usersettings.html', title='Settings', form=UserSettingsForm())

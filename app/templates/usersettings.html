@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+
 {% block content %}
     <h1>Change Settings</h1>
     <form action="" method="post" novalidate>
@@ -24,4 +26,7 @@
         </p>
         <p>{{ form.submit() }}</p>
     </form>
+    {%if message%}
+    <p>{{message}}</p>
+    {% endif %}
 {% endblock %}
