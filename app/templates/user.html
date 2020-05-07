@@ -7,4 +7,9 @@
   <p>
     E-Mail: {{user.email}}
   </p>
+
+  {% if user == current_user %}
+  <p><a href="{{ url_for('usersettings') }}">Edit your profile</a></p>
+  {% endif %}
+
 {% endblock %}
