@@ -90,4 +90,4 @@ def usersettings():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    return render_template('user.html', username=user.username)
+    return render_template('user.html', user=user)
