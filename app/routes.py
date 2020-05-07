@@ -85,3 +85,9 @@ def usersettings():
         db.session.commit()
         return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Your changes are made!')
     return render_template('usersettings.html', title='Settings', form=UserSettingsForm())
+
+@app.route('/user/<username>')
+@login_required
+def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('user.html', username=user.username)
