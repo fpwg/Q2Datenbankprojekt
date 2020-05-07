@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>
+    {{user.username}}'s Profile
+  </h1>
+  <p>
+    E-Mail: <a href="mailto:{{user.email}}">{{user.email}}</a>
+  </p>
+
+  {% if user == current_user %}
+  <p><a href="{{ url_for('usersettings') }}">Edit your profile</a></p>
+  {% endif %}
+
+{% endblock %}
