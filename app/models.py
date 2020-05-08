@@ -3,6 +3,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask_login import UserMixin
 
+
+organisation_user = db.Table('organisation_user',
+    db.Column('organisation_id', db.Integer, db.ForeignKey('organisation.id'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+)
+
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -25,8 +32,4 @@ def load_user(id):
 class Organisation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
-
-organisation_user = db.Table('organisation_user',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('organisation_id', db.Integer, db.ForeignKey('organisation.id'), primary_key=True)
-)
+    user = db.relationship("User", secondary='organisation_user')
