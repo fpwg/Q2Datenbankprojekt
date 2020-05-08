@@ -15,6 +15,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    organisations = db.relationship("Organisation", secondary='organisation_user', back_populates="user")
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -32,4 +33,7 @@ def load_user(id):
 class Organisation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
-    user = db.relationship("User", secondary='organisation_user')
+    user = db.relationship("User", secondary='organisation_user', back_populates="organisations")
+
+    def add_user(self, new_user):
+        self.user.append(new_user)
