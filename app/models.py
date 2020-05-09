@@ -26,9 +26,20 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def add_organisation(self, new_organisation):
+        self.organisations.append(new_organisation)
+
+    def remove_organisation(self, old_organisation):
+        if old_organisation in self.organisations:
+            self.organisations.remove(old_organisation)
+            return True
+        return False
+
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
 
 class Organisation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,3 +48,9 @@ class Organisation(db.Model):
 
     def add_user(self, new_user):
         self.user.append(new_user)
+
+    def remove_user(self, old_user):
+        if old_user in self.organisations:
+            self.organisations.remove(old_user)
+            return True
+        return False
