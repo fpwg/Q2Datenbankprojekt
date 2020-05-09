@@ -95,5 +95,5 @@ def user(username):
 @app.route('/organisation/<name>')
 @login_required
 def organisation(name):
-    otganisation = Organisation.query.filter_by(name=name).first_or_404()
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
     return render_template('organisation.html', organisation=organisation)
