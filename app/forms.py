@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 from app.models import User
 
@@ -45,3 +45,8 @@ class UserSettingsForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('A user with this email is already registered.')
+
+
+class UserOrganisationForm(FlaskForm):
+    user = SelectField(u'Select User', coerce=int)
+    submit = SubmitField('Submit')

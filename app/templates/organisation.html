@@ -4,6 +4,36 @@
   <h1>
     {{organisation.name}}'s Page
   </h1>
+  <h2>
+    Add User
+  </h2>
+  <form action="" method="post" novalidate>
+      {{ add_form.hidden_tag() }}
+      <p>
+          {{ add_form.user.label }}:
+          {{ add_form.user() }}
+      </p>
+      <p>
+          {{add_form.submit()}}
+      </p>
+  </form>
+  <h2>
+    Remove User
+  </h2>
+  <form action="" method="post" novalidate>
+      {{ remove_form.hidden_tag() }}
+      <p>
+          {{ remove_form.user.label }}:
+          {{ remove_form.user() }}
+      </p>
+      <p>
+          {{remove_form.submit()}}
+      </p>
+  </form>
+
+  <h2>
+    All Users Of This Organisation
+  </h2>
   {% for u in organisation.user %}
     <p>
       <a href="{{ url_for('user', username=u.username) }}"> {{ u.username }} </a>
