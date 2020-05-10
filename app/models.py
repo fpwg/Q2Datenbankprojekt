@@ -50,7 +50,7 @@ class Organisation(db.Model):
         self.user.append(new_user)
 
     def remove_user(self, old_user):
-        if old_user in self.organisations:
-            self.organisations.remove(old_user)
+        if old_user in self.user:
+            self.user.remove(old_user)
             return True
         return False
