@@ -5,6 +5,15 @@
     {{organisation.name}}'s Page
   </h1>
   <h2>
+    Join This Organisation
+  </h2>
+  <form action="" method="post" novalidate>
+      {{ join_form.hidden_tag() }}
+      <p>
+          {{join_form.join()}}
+      </p>
+  </form>
+  <h2>
     Add User
   </h2>
   <form action="" method="post" novalidate>

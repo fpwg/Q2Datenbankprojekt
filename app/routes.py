@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request
 from app import app, db
 
-from app.forms import LoginForm, RegistrationForm, UserSettingsForm, UserOrganisationForm
+from app.forms import LoginForm, RegistrationForm, UserSettingsForm, UserOrganisationForm, JoinForm
 
 from app.models import User, Organisation
 from flask_login import current_user, login_user, logout_user, login_required
@@ -96,6 +96,9 @@ def user(username):
 @login_required
 def organisation(name):
     organisation = Organisation.query.filter_by(name=name).first_or_404()
+
+    join_form = JoinForm()
+
     all_user = User.query.all()
     add_user_form = UserOrganisationForm(obj=all_user)
     add_user_form.user.choices = [(u.id, u.username) for u in all_user]
@@ -104,7 +107,7 @@ def organisation(name):
     remove_user_form = UserOrganisationForm(obj=user_in_organisation)
     remove_user_form.user.choices = [(u.id, u.username) for u in user_in_organisation]
 
-    return render_template('organisation.html', organisation=organisation, add_form=add_user_form, remove_form=remove_user_form)
+    return render_template('organisation.html', organisation=organisation, add_form=add_user_form, remove_form=remove_user_form, join_form=join_form)
 
 @app.route('/organisationslist')
 def organisationslist():

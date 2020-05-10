@@ -50,3 +50,7 @@ class UserSettingsForm(FlaskForm):
 class UserOrganisationForm(FlaskForm):
     user = SelectField(u'Select User', coerce=int)
     submit = SubmitField('Submit')
+
+
+class JoinForm(FlaskForm):
+    join = SubmitField('Join!')
