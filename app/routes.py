@@ -3,7 +3,7 @@ from app import app, db
 
 from app.forms import LoginForm, RegistrationForm, UserSettingsForm
 
-from app.models import User
+from app.models import User, Organisation
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
@@ -97,3 +97,8 @@ def user(username):
 def organisation(name):
     organisation = Organisation.query.filter_by(name=name).first_or_404()
     return render_template('organisation.html', organisation=organisation)
+
+@app.route('/organisationslist')
+def organisationslist():
+    organisations = Organisation.query.all()
+    return render_template('organisationslist.html', organisations=organisations)

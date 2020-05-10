@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>
+    Registered Organisations
+  </h1>
+  {% for o in organisations %}
+    <p>
+      <a href="{{ url_for('organisation', name = o.name) }}"> {{ o.name }} </a>
+    </p>
+  {% endfor %}
+
+{% endblock %}
