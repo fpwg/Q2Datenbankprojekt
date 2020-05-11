@@ -108,7 +108,7 @@ def organisation(name):
             all_user.remove(u)
     add_user_form = UserOrganisationForm(obj=all_user)
     add_user_form.user.choices = [(u.id, u.username) for u in all_user]
-    add_user_form.user.choices.insert(0, (-1,"Bitte auswählen"))
+    add_user_form.user.choices.insert(0, (-1,"choose"))
     if add_user_form.validate_on_submit() and not add_user_form.user.data == -1:
         new_user_id = add_user_form.user.data
         print(new_user_id)
@@ -119,6 +119,7 @@ def organisation(name):
     user_in_organisation = organisation.user
     remove_user_form = UserOrganisationForm(obj=user_in_organisation)
     remove_user_form.user.choices = [(u.id, u.username) for u in user_in_organisation]
+    remove_user_form.user.choices.insert(0, (-1, "choose"))
 
     return render_template('organisation.html', organisation=organisation, add_form=add_user_form, remove_form=remove_user_form, join_form=join_form)
 
