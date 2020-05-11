@@ -104,6 +104,9 @@ def organisation(name):
         db.session.commit()
 
     all_user = User.query.all()
+    for u in all_user:
+        if organisation in u.organisations:
+            all_user.remove(u)
     add_user_form = UserOrganisationForm(obj=all_user)
     add_user_form.user.choices = [(u.id, u.username) for u in all_user]
 
