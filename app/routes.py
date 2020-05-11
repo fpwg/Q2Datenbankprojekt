@@ -98,7 +98,6 @@ def organisation(name):
     organisation = Organisation.query.filter_by(name=name).first_or_404()
 
     join_form = JoinForm()
-
     if join_form.validate_on_submit():
         organisation.add_user(current_user)
         db.session.commit()
@@ -109,6 +108,13 @@ def organisation(name):
             all_user.remove(u)
     add_user_form = UserOrganisationForm(obj=all_user)
     add_user_form.user.choices = [(u.id, u.username) for u in all_user]
+    add_user_form.user.choices.insert(0, (-1,"Bitte auswählen"))
+    if add_user_form.validate_on_submit() and not add_user_form.user.data == -1:
+        new_user_id = add_user_form.user.data
+        print(new_user_id)
+        new_user = User.query.get(new_user_id)
+        print (new_user)
+        organisation.add_user(new_user)
 
     user_in_organisation = organisation.user
     remove_user_form = UserOrganisationForm(obj=user_in_organisation)
