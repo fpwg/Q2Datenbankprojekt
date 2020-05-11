@@ -47,7 +47,10 @@ class Organisation(db.Model):
     user = db.relationship("User", secondary='organisation_user', back_populates="organisations")
 
     def add_user(self, new_user):
-        self.user.append(new_user)
+        if not new_user in self.user:
+            self.user.append(new_user)
+            return True
+        return False
 
     def remove_user(self, old_user):
         if old_user in self.user:

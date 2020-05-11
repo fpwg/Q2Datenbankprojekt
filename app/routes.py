@@ -99,6 +99,10 @@ def organisation(name):
 
     join_form = JoinForm()
 
+    if join_form.validate_on_submit():
+        organisation.add_user(current_user)
+        db.session.commit()
+
     all_user = User.query.all()
     add_user_form = UserOrganisationForm(obj=all_user)
     add_user_form.user.choices = [(u.id, u.username) for u in all_user]
