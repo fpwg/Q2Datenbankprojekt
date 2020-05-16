@@ -45,6 +45,7 @@ class Organisation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     user = db.relationship("User", secondary='organisation_user', back_populates="organisations")
+    inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
 
     def add_user(self, new_user):
         self.user.append(new_user)
@@ -54,3 +55,9 @@ class Organisation(db.Model):
             self.organisations.remove(old_user)
             return True
         return False
+
+
+class InventoryObject(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    article = db.Column(db.String(64), index=True)
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
