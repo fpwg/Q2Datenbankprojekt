@@ -48,16 +48,30 @@ class Organisation(db.Model):
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
 
     def add_user(self, new_user):
-        self.user.append(new_user)
+        if not new_user in self.user:
+            self.user.append(new_user)
 
     def remove_user(self, old_user):
         if old_user in self.organisations:
             self.organisations.remove(old_user)
-            return True
-        return False
+
+    def add_inventoryobject(self, inv):
+        if not inv in self.inventoryobjects:
+            self.inventoryobjects.append(inv)
+
+    def remove_inventoryobject(self, inv):
+        if inv in self.inventoryobjects:
+            self.inventoryobjects.remove(inv)
 
 
 class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     article = db.Column(db.String(64), index=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
+    description = db.Column(db.String(128), index=True)
+
+    def set_description(self, text):
+        self.description = text
+
+    def set_organisation(self, org):
+        self.organisation = org
