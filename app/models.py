@@ -16,6 +16,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     organisations = db.relationship("Organisation", secondary='organisation_user', back_populates="user")
+    borrowed_objects = db.relationship("InventoryObject", secondary='borrowed_by', back_populates="user")
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -34,6 +35,14 @@ class User(UserMixin, db.Model):
             self.organisations.remove(old_organisation)
             return True
         return False
+
+    def borrow_object(self, inv):
+        if not inv in self.borrow_objects:
+            self.borrow_objects.append(inv)
+
+    def return_object(self, inv):
+        if inv in self.borrowed_objects:
+            self.borrowed_objects.remove(inv)
 
 
 @login.user_loader
@@ -69,9 +78,13 @@ class InventoryObject(db.Model):
     article = db.Column(db.String(64), index=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     description = db.Column(db.String(128), index=True)
+    lend_to = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def set_description(self, text):
         self.description = text
 
     def set_organisation(self, org):
         self.organisation = org
+
+    def lend_to_user(self, user):
+        self.lend_to = user
