@@ -3,7 +3,7 @@ from app import app, db
 
 from app.forms import LoginForm, RegistrationForm, UserSettingsForm
 
-from app.models import User
+from app.models import User, InventoryObject, Organisation
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
@@ -91,3 +91,9 @@ def usersettings():
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('user.html', user=user)
+
+@app.route('/inventoryobject/<id>')
+def inventoryobject(id):
+    inv = InventoryObject.query.filter_by(id=id).first_or_404()
+    organisation = Organisation.query.filter_by(id = inv.organisation).first()
+    return render_template('inventoryobject.html', inventoryobject = inv, organisation = organisation)
