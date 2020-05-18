@@ -1,5 +1,6 @@
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import url_for
 
 from flask_login import UserMixin
 
@@ -18,6 +19,10 @@ class User(UserMixin, db.Model):
     organisations = db.relationship("Organisation", secondary='organisation_user', back_populates="user")
     borrowed_objects = db.relationship("InventoryObject", backref='borrowed_by', lazy='dynamic')
 
+    """URL der Profilseite"""
+    def page(self):
+        return url_for('user', username=self.username)
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
@@ -35,7 +40,7 @@ class User(UserMixin, db.Model):
             self.organisations.remove(old_organisation)
             return True
         return False
-        
+
 
 @login.user_loader
 def load_user(id):
@@ -48,6 +53,9 @@ class Organisation(db.Model):
     user = db.relationship("User", secondary='organisation_user', back_populates="organisations")
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
 
+    """URL der Profilseite"""
+    def page(self):
+        return url_for('organisation', organisation=self.name)
 
     """Füge einen Nutzer hinzu"""
     def add_user(self, new_user):
