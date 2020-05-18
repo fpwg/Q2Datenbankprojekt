@@ -67,9 +67,17 @@ def register_organisation():
     return render_template('create_organisation.html', title='Create Organisation', form=OrganisationCreationForm())
 
 
-@app.route('/organisation/<name>')
+@app.route('/organisations')
+def organisations():
+    organisations = Organisation.query.all()
+    return render_template('organisation_list.html', organisations=organisations)
+
+
+@app.route('/organisations/<name>')
 def organisation(name):
-    return name
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    return render_template('organisation.html', organisation=organisation)
+
 
 @login_required
 @app.route('/usersettings', methods=['GET', 'POST'])

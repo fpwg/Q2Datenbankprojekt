@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>
+    Organisation {{organisation.name}}
+  </h1>
+  <h2>Nutzer</h2>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>Name</td>
+      <td>Email</td>
+    </tr>
+    {% for user in organisation.user %}
+    <tr>
+        <td><a href="{{ url_for('user', username=user.username) }}">{{ user.username }}</a></td>
+        <td><a href="mailto:{{user.email}}">{{user.email}}</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+
+
+{% endblock %}

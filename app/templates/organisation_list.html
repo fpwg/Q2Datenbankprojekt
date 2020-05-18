@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>
+    Alle Organisationen
+  </h1>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>Name</td>
+      <td>Nutzeranzahl</td>
+    </tr>
+    {% for organisation in organisations %}
+    <tr>
+        <td><a href="{{ url_for('organisation', name=organisation.name) }}">{{ organisation.name }}</a></td>
+        <td>{{ organisation.user_count() }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+
+{% endblock %}
