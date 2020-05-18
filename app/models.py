@@ -76,7 +76,7 @@ class Organisation(db.Model):
 class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     article = db.Column(db.String(64), index=True)
-    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     description = db.Column(db.String(128), index=True)
     lend_to = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -84,7 +84,11 @@ class InventoryObject(db.Model):
         self.description = text
 
     def set_organisation(self, org):
-        self.organisation = org
+        self.organisation = org.id
+
+    def get_organisation(self):
+        org = Organisation.query.filter_by(id=self.organisation).first()
+        return org
 
     def lend_to_user(self, user):
-        self.lend_to = user
+        self.lend_to = user.id
