@@ -57,6 +57,10 @@ class Organisation(db.Model):
     def page(self):
         return url_for('organisation', organisation=self.name)
 
+    """Anzahl registrierter Nutzer"""
+    def user_count(self):
+        return len(self.user)
+
     """Füge einen Nutzer hinzu"""
     def add_user(self, new_user):
         if not new_user in self.user:
