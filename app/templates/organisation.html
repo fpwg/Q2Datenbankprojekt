@@ -4,7 +4,8 @@
   <h1>
     Organisation {{organisation.name}}
   </h1>
-  <h2>Nutzer</h2>
+  {% if organisation.user %}
+  <h2>Mitglieder</h2>
   <table>
     <tr style="font-weight: bold;">
       <td>Nutzername</td>
@@ -23,6 +24,20 @@
     </tr>
     {% endfor %}
   </table>
+  {% else %}
+  <p>Diese Organisation hat keine Mitglieder</p>
+  {% endif %}
+  {% if is_admin %}
+  <h3>Nutzer hinzufügen</h3>
+  <form action="" method="post" novalidate>
+    {{ add_form.hidden_tag() }}
+    {{ add_form.id(value="add-user", hidden=True) }}
 
+    {{ add_form.username.label}}
+    {{ add_form.username }}
+
+    {{ add_form.submit }}
+  </form>
+  {% endif %}
 
 {% endblock %}

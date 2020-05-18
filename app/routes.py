@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request, flash
 from app import app, db
 
-from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm, RemoveUserFromOrganisationForm
+from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm, RemoveUserFromOrganisationForm, AddUserToOrganisationForm
 
 from app.models import User, Organisation
 from flask_login import current_user, login_user, logout_user, login_required
@@ -88,7 +88,14 @@ def organisation(name):
             organisation.remove_user(user)
             db.session.commit()
 
-    return render_template('organisation.html', organisation=organisation, remove_form=RemoveUserFromOrganisationForm(), is_admin=is_admin)
+    add_form = AddUserToOrganisationForm()
+    if add_form.id.data == "add-user" and add_form.validate_on_submit() and is_admin:
+        user = User.query.filter_by(username=remove_form.username.data).first()
+        if user:
+            organisation.add_user(user)
+            db.session.commit()
+
+    return render_template('organisation.html', organisation=organisation, remove_form=RemoveUserFromOrganisationForm(), add_form=AddUserToOrganisationForm(), is_admin=is_admin)
 
 
 @login_required

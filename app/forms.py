@@ -45,6 +45,12 @@ class RemoveUserFromOrganisationForm(FlaskForm):
     submit = SubmitField('Entfernen')
 
 
+class AddUserToOrganisationForm(FlaskForm):
+    id = StringField()
+    username = StringField('Username', validators=[DataRequired()])
+    submit = SubmitField('Hinzufügen')
+
+
 class UserSettingsForm(FlaskForm):
     change_username = StringField('New Username')
     change_email = StringField('New Email')
