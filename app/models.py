@@ -68,8 +68,8 @@ class Organisation(db.Model):
 
     """Entferne einen Nutzer"""
     def remove_user(self, old_user):
-        if old_user in self.organisations:
-            self.organisations.remove(old_user)
+        if old_user in self.user:
+            self.user.remove(old_user)
 
     """Registriere einen Gegenstand"""
     def add_object(self, inv):

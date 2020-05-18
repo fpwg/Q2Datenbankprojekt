@@ -38,6 +38,13 @@ class OrganisationCreationForm(FlaskForm):
         if organisation is not None:
             raise ValidationError('Name is already taken.')
 
+
+class RemoveUserFromOrganisationForm(FlaskForm):
+    id = StringField()
+    username = StringField('Username', validators=[DataRequired()])
+    submit = SubmitField('Entfernen')
+
+
 class UserSettingsForm(FlaskForm):
     change_username = StringField('New Username')
     change_email = StringField('New Email')
