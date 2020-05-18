@@ -16,7 +16,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     organisations = db.relationship("Organisation", secondary='organisation_user', back_populates="user")
-    borrowed_objects = db.relationship("InventoryObject", secondary='borrowed_by', back_populates="user")
+    borrowed_objects = db.relationship("InventoryObject", backref='borrowed_by', lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
