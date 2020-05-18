@@ -8,6 +8,16 @@
     E-Mail: <a href="mailto:{{user.email}}">{{user.email}}</a>
   </p>
 
+
+  <h2>
+    Borrowed Objects
+  </h2>
+  {% for inventoryobject in user.borrowed_objects %}
+  <p>
+    <a href={{ url_for('inventoryobject', id=inventoryobject.id) }}> {{ inventoryobject.article }} </a>
+  </p>
+  {% endfor %}
+
   {% if user == current_user %}
   <p><a href="{{ url_for('usersettings') }}">Edit your profile</a></p>
   {% endif %}
