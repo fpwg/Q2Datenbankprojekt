@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, flash
 from app import app, db
 
 from app.forms import LoginForm, RegistrationForm, UserSettingsForm
@@ -54,6 +54,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=RegistrationForm())
 
+
 @login_required
 @app.route('/usersettings', methods=['GET', 'POST'])
 def usersettings():
@@ -86,8 +87,11 @@ def usersettings():
         return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Your changes are made!')
     return render_template('usersettings.html', title='Settings', form=UserSettingsForm())
 
+
 @app.route('/user/<username>')
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('user.html', user=user)
+
+

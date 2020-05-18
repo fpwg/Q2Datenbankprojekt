@@ -21,29 +21,21 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
+    """Setzt das Passwort für den Nutzer"""
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
+    """Gleicht das Passwort mit dem gespeicherten Hash ab"""
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def add_organisation(self, new_organisation):
-        self.organisations.append(new_organisation)
-
-    def remove_organisation(self, old_organisation):
+    """Verlasse eine Organisation"""
+    def leave_organisation(self, old_organisation):
         if old_organisation in self.organisations:
             self.organisations.remove(old_organisation)
             return True
         return False
-
-    def borrow_object(self, inv):
-        if not inv in self.borrow_objects:
-            self.borrow_objects.append(inv)
-
-    def return_object(self, inv):
-        if inv in self.borrowed_objects:
-            self.borrowed_objects.remove(inv)
-
+        
 
 @login.user_loader
 def load_user(id):
@@ -56,21 +48,40 @@ class Organisation(db.Model):
     user = db.relationship("User", secondary='organisation_user', back_populates="organisations")
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
 
+
+    """Füge einen Nutzer hinzu"""
     def add_user(self, new_user):
         if not new_user in self.user:
             self.user.append(new_user)
 
+    """Entferne einen Nutzer"""
     def remove_user(self, old_user):
         if old_user in self.organisations:
             self.organisations.remove(old_user)
 
-    def add_inventoryobject(self, inv):
+    """Registriere einen Gegenstand"""
+    def add_object(self, inv):
         if not inv in self.inventoryobjects:
             self.inventoryobjects.append(inv)
 
-    def remove_inventoryobject(self, inv):
+    """Lösche einen Gegenstand"""
+    def delete_object(self, inv):
         if inv in self.inventoryobjects:
             self.inventoryobjects.remove(inv)
+
+    """Verleihe einen Gegenstand"""
+    def lend_object_to(self, user, object):
+        assert object in self.inventoryobjects, "Object not owned by organisation"
+        assert object.lend_to is None, "Object is already lent to a user"
+        # success
+        object.lend_to = user
+
+    """Nimm einen Gegenstand zurück"""
+    def take_back_object(self, object):
+        assert object in self.inventoryobjects, "Object not owned by organisation"
+        assert object.lend_to is not None, "Object is not lent to a user"
+        # success
+        object.lend_to = None
 
 
 class InventoryObject(db.Model):
@@ -79,16 +90,3 @@ class InventoryObject(db.Model):
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     description = db.Column(db.String(128), index=True)
     lend_to = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def set_description(self, text):
-        self.description = text
-
-    def set_organisation(self, org):
-        self.organisation = org.id
-
-    def get_organisation(self):
-        org = Organisation.query.filter_by(id=self.organisation).first()
-        return org
-
-    def lend_to_user(self, user):
-        self.lend_to = user.id
