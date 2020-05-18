@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
-from app.models import User
+from app.models import User, Organisation
 
 
 class LoginForm(FlaskForm):
@@ -21,13 +21,22 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
-            raise ValidationError('Name already used.')
+            raise ValidationError('Name already taken.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('A user with this email is already registered.')
 
+
+class OrganisationCreationForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(min=3, max=100)])
+    submit = SubmitField('Sign In')
+
+    def validate_name(self, name):
+        organisation = Organisation.query.filter_by(name=name.data).first()
+        if organisation is not None:
+            raise ValidationError('Name is already taken.')
 
 class UserSettingsForm(FlaskForm):
     change_username = StringField('New Username')
