@@ -31,6 +31,7 @@ class RegistrationForm(FlaskForm):
 
 class OrganisationCreationForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(min=3, max=100)])
+    submit = SubmitField('Sign In')
 
     def validate_name(self, name):
         organisation = Organisation.query.filter_by(name=name.data).first()
