@@ -97,7 +97,7 @@ def usersettings():
             try:
                  valid = validate_email(email)
                  current_user.email=valid.email
-             except EmailNotValidError:
+            except EmailNotValidError:
                  return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'No valid imput')
         if password:
             current_user.set_password(password)
@@ -117,5 +117,3 @@ def usersettings():
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('user.html', user=user)
-
-
