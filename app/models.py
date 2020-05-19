@@ -102,3 +102,8 @@ class InventoryObject(db.Model):
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     description = db.Column(db.String(128), index=True)
     lend_to = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
+class Room(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
