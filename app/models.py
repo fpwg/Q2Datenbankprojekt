@@ -52,6 +52,7 @@ class Organisation(db.Model):
     name = db.Column(db.String(64), index=True, unique=True)
     user = db.relationship("User", secondary='organisation_user', back_populates="organisations")
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
+    statuses = db.relationship('Status', backref='from_organisation', lazy=True)
 
     """URL der Profilseite"""
     def page(self):
@@ -120,3 +121,4 @@ class status(db.Model):
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128), index=True)
     inventoryobjects = db.relationship('InventoryObject', backref='has_status', lazy=True)
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
