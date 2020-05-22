@@ -103,6 +103,7 @@ class InventoryObject(db.Model):
     description = db.Column(db.String(128), index=True)
     lend_to = db.Column(db.Integer, db.ForeignKey('user.id'))
     room = db.Column(db.Integer, db.ForeignKey('room.id'))
+    status = db.Column(db.Integer, db.ForeignKey('status.id'))
 
     """Ordne Gegenstand einem Raum/Ort zu"""
     def set_room(self, room):
@@ -118,3 +119,4 @@ class status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128), index=True)
+    inventoryobjects = db.relationship('InventoryObject', backref='has_status', lazy=True)
