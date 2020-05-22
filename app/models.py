@@ -110,6 +110,11 @@ class InventoryObject(db.Model):
     def set_room(self, room):
         self.room = room.id
 
+    """Ordne einem Gegenstand einen Zustand zu"""
+    def set_status(self, status):
+        if self.organisation == status.organisations
+            self.status = status.id
+
 
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
