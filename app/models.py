@@ -112,7 +112,7 @@ class InventoryObject(db.Model):
 
     """Ordne einem Gegenstand einen Zustand zu"""
     def set_status(self, status):
-        if self.organisation == status.organisations
+        if self.organisation == status.organisation:
             self.status = status.id
 
 
