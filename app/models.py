@@ -12,7 +12,7 @@ organisation_user = db.Table('organisation_user',
 
 category_inventoryobject = db.Table('category_organisation',
     db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True),
-    db.Column('inventoryobject_id', db.Integer, db.ForeignKey('inventoryobject.id'), primary_key=True)
+    db.Column('inventoryobject_id', db.Integer, db.ForeignKey('inventory_object.id'), primary_key=True)
 )
 
 
