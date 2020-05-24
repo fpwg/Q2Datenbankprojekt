@@ -57,6 +57,7 @@ class Organisation(db.Model):
     name = db.Column(db.String(64), index=True, unique=True)
     user = db.relationship("User", secondary='organisation_user', back_populates="organisations")
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
+    statuses = db.relationship('Status', backref='from_organisation', lazy=True)
     categorys = db.relationship('Category', backref='from_organisation', lazy=True)
 
     """URL der Profilseite"""
@@ -114,11 +115,17 @@ class InventoryObject(db.Model):
     description = db.Column(db.String(128), index=True)
     lend_to = db.Column(db.Integer, db.ForeignKey('user.id'))
     room = db.Column(db.Integer, db.ForeignKey('room.id'))
+    status = db.Column(db.Integer, db.ForeignKey('status.id'))
     categorys = db.relationship('Category', secondary='category_inventoryobject', back_populates='inventoryobjects')
 
     """Ordne Gegenstand einem Raum/Ort zu"""
     def set_room(self, room):
         self.room = room.id
+
+    """Ordne einem Gegenstand einen Zustand zu"""
+    def set_status(self, status):
+        if self.organisation == status.organisation:
+            self.status = status.id
 
     """Füge einem Gegenstand eine Kategorie zu"""
     def add_category(self, category):
@@ -131,6 +138,15 @@ class Room(db.Model):
     name = db.Column(db.String(64), index=True)
     inventoryobjects = db.relationship('InventoryObject', backref='in_room', lazy=True)
 
+
+class status(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    description = db.Column(db.String(128), index=True)
+    inventoryobjects = db.relationship('InventoryObject', backref='has_status', lazy=True)
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+
+    
 class category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
