@@ -139,15 +139,15 @@ class Room(db.Model):
     inventoryobjects = db.relationship('InventoryObject', backref='in_room', lazy=True)
 
 
-class status(db.Model):
+class Status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128), index=True)
     inventoryobjects = db.relationship('InventoryObject', backref='has_status', lazy=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
 
-    
-class category(db.Model):
+
+class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128), index=True)
