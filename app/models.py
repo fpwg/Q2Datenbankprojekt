@@ -10,6 +10,11 @@ organisation_user = db.Table('organisation_user',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
 )
 
+category_inventoryobject = db.Table('category_organisation',
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True),
+    db.Column('inventoryobject_id', db.Integer, db.ForeignKey('inventoryobject.id'), primary_key=True)
+)
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,7 +57,6 @@ class Organisation(db.Model):
     name = db.Column(db.String(64), index=True, unique=True)
     user = db.relationship("User", secondary='organisation_user', back_populates="organisations")
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
-    categorys = db.relationship('Category', backref='of_organisation', lazy=True)
 
     """URL der Profilseite"""
     def page(self):
@@ -104,7 +108,8 @@ class InventoryObject(db.Model):
     description = db.Column(db.String(128), index=True)
     lend_to = db.Column(db.Integer, db.ForeignKey('user.id'))
     room = db.Column(db.Integer, db.ForeignKey('room.id'))
-    category = db.Column(db.Integer, db.ForeignKey('category.id'))
+    categorys = db.relationship('Category', secondary='category_inventoryobject', back_populates='inventoryobjects')
+
 
     """Ordne Gegenstand einem Raum/Ort zu"""
     def set_room(self, room):
@@ -121,4 +126,4 @@ class category(db.Model):
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128), index=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    inventoryobjects = db.relationship('InventoryObject', backref='got_category', lazy=True)
+    inventoryobjects = db.relationship('InventoryObject', secondary='category_inventoryobject', back_populates='categorys')
