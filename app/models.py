@@ -10,6 +10,11 @@ organisation_user = db.Table('organisation_user',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
 )
 
+category_inventoryobject = db.Table('category_organisation',
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True),
+    db.Column('inventoryobject_id', db.Integer, db.ForeignKey('inventory_object.id'), primary_key=True)
+)
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,6 +57,7 @@ class Organisation(db.Model):
     name = db.Column(db.String(64), index=True, unique=True)
     user = db.relationship("User", secondary='organisation_user', back_populates="organisations")
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
+    categorys = db.relationship('Category', backref='from_organisation', lazy=True)
 
     """URL der Profilseite"""
     def page(self):
@@ -95,6 +101,11 @@ class Organisation(db.Model):
         # success
         object.lend_to = None
 
+    """Füge eine Kategorie hinzu"""
+    def add_category(self, category):
+        if not category in self.categorys:
+            self.categorys.append(category)
+
 
 class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -103,13 +114,26 @@ class InventoryObject(db.Model):
     description = db.Column(db.String(128), index=True)
     lend_to = db.Column(db.Integer, db.ForeignKey('user.id'))
     room = db.Column(db.Integer, db.ForeignKey('room.id'))
+    categorys = db.relationship('Category', secondary='category_inventoryobject', back_populates='inventoryobjects')
 
     """Ordne Gegenstand einem Raum/Ort zu"""
     def set_room(self, room):
         self.room = room.id
+
+    """Füge einem Gegenstand eine Kategorie zu"""
+    def add_category(self, category):
+        if self.organisation == category.organisation:
+            self.categorys.append(category)
 
 
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     inventoryobjects = db.relationship('InventoryObject', backref='in_room', lazy=True)
+
+class category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    description = db.Column(db.String(128), index=True)
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    inventoryobjects = db.relationship('InventoryObject', secondary='category_inventoryobject', back_populates='categorys')
