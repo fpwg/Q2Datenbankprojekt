@@ -21,7 +21,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    organisations = db.relationship("Organisation", secondary='organisation_user', back_populates="user")
+    organisations = db.relationship("User_in_Organisation", back_populates="user")
     borrowed_objects = db.relationship("InventoryObject", backref='borrowed_by', lazy='dynamic')
 
     """URL der Profilseite"""
@@ -55,7 +55,7 @@ def load_user(id):
 class Organisation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
-    user = db.relationship("User", secondary='organisation_user', back_populates="organisations")
+    user = db.relationship("User_in_Organisation", back_populates="organisations")
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
     statuses = db.relationship('Status', backref='from_organisation', lazy=True)
     categorys = db.relationship('Category', backref='from_organisation', lazy=True)
@@ -158,3 +158,5 @@ class Category(db.Model):
 class User_in_Organisation(db.Model):
     user_id = db.Column(db.Integer, ForeignKey(user.id), primary_key=True)
     organisation_id = db.Column(db.Integer, ForeignKey(organisation.id), primary_key=True)
+    user = db.relationship('User', back_populates="organisations")
+    organisation = db.relationship('Organisation', back_populates='user')
