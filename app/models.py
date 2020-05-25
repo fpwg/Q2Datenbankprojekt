@@ -43,7 +43,9 @@ class User(UserMixin, db.Model):
 
     """Verlasse eine Organisation"""
     def leave_organisation(self, old_organisation):
-        pass
+        for i in self.organisations:
+            if old_organisation.id == i.organisation_id:
+                db.session.delete(i)
 
 
 @login.user_loader
@@ -69,13 +71,18 @@ class Organisation(db.Model):
 
     """Füge einen Nutzer hinzu"""
     def add_user(self, user):
+        for i in self.user:
+            if i.user_id == user.id:
+                return False
         a = User_in_Organisation()
         a.user = user
-        self.user.append(a)
+        a.organisation = self
 
     """Entferne einen Nutzer"""
     def remove_user(self, old_user):
-        pass
+        for i in self.user:
+            if old_user.id == i.user_id:
+                db.session.delete(i)
 
     """Registriere einen Gegenstand"""
     def add_object(self, inv):
