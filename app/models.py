@@ -153,3 +153,8 @@ class Category(db.Model):
     description = db.Column(db.String(128), index=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     inventoryobjects = db.relationship('InventoryObject', secondary='category_inventoryobject', back_populates='categorys')
+
+
+class User_in_Organisation(db.Model):
+    user_id = db.Column(db.Integer, ForeignKey(user.id), primary_key=True)
+    organisation_id = db.Column(db.Integer, ForeignKey(organisation.id), primary_key=True)
