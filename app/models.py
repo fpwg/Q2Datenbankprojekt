@@ -116,6 +116,17 @@ class Organisation(db.Model):
         if not category in self.categorys:
             self.categorys.append(category)
 
+    """Füge einen Rang hinzu"""
+    def add_rank(self, rank):
+        if not rank in self.ranks:
+            self.ranks.append(ranks)
+
+    """Gebe einem User einen Rang"""
+    def set_rank(self, rank, user):
+        for i in user.organisations:
+            if i.organisation_id == self.id:
+                i.rank = rank
+
 
 class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
