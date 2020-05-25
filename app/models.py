@@ -55,7 +55,7 @@ def load_user(id):
 class Organisation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
-    user = db.relationship("User_in_Organisation", back_populates="organisations")
+    user = db.relationship("User_in_Organisation", back_populates="organisation")
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
     statuses = db.relationship('Status', backref='from_organisation', lazy=True)
     categorys = db.relationship('Category', backref='from_organisation', lazy=True)
