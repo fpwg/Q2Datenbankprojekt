@@ -118,7 +118,7 @@ class InventoryObject(db.Model):
     lend_to = db.Column(db.Integer, db.ForeignKey('user.id'))
     room = db.Column(db.Integer, db.ForeignKey('room.id'))
     status = db.Column(db.Integer, db.ForeignKey('status.id'))
-    categorys = db.relationship('Category', secondary='category_inventoryobject', back_populates='inventoryobjects')
+    categorys = db.relationship('Category', secondary=category_inventoryobject, back_populates='inventoryobjects')
 
     """Ordne Gegenstand einem Raum/Ort zu"""
     def set_room(self, room):
@@ -154,4 +154,4 @@ class Category(db.Model):
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128), index=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    inventoryobjects = db.relationship('InventoryObject', secondary='category_inventoryobject', back_populates='categorys')
+    inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categorys')
