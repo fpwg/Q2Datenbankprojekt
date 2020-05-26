@@ -17,7 +17,7 @@ class User_in_Organisation(db.Model):
     rank_id = db.Column(db.Integer, db.ForeignKey("rank.id"))
 
     user = db.relationship('User', back_populates="organisations")
-    organisation = db.relationship('Organisation', back_populates='user')
+    organisation = db.relationship('Organisation', back_populates="user")
 
 
 class User(UserMixin, db.Model):
@@ -119,7 +119,7 @@ class Organisation(db.Model):
     """Füge einen Rang hinzu"""
     def add_rank(self, rank):
         if not rank in self.ranks:
-            self.ranks.append(ranks)
+            self.ranks.append(rank)
 
     """Gebe einem User einen Rang"""
     def set_rank(self, rank, user):
@@ -182,4 +182,4 @@ class Rank(db.Model):
     example = db.Column(db.Boolean)
 
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    users = db.relationship('User_in_Organisation', backref="rank", lazy=True)
+    user = db.relationship('User_in_Organisation', backref='rank', lazy=True)
