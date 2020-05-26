@@ -14,8 +14,10 @@ category_inventoryobject = db.Table('category_organisation',
 class User_in_Organisation(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
     organisation_id = db.Column(db.Integer, db.ForeignKey("organisation.id"), primary_key=True)
+    rank_id = db.Column(db.Integer, db.ForeignKey("rank.id"))
+
     user = db.relationship('User', back_populates="organisations")
-    organisation = db.relationship('Organisation', back_populates='user')
+    organisation = db.relationship('Organisation', back_populates="user")
 
 
 class User(UserMixin, db.Model):
@@ -60,6 +62,7 @@ class Organisation(db.Model):
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
     statuses = db.relationship('Status', backref='from_organisation', lazy=True)
     categorys = db.relationship('Category', backref='from_organisation', lazy=True)
+    ranks = db.relationship('Rank', backref='from_organisation', lazy=True)
 
     """URL der Profilseite"""
     def page(self):
@@ -113,6 +116,23 @@ class Organisation(db.Model):
         if not category in self.categorys:
             self.categorys.append(category)
 
+    """Füge einen Rang hinzu"""
+    def add_rank(self, rank):
+        if not rank in self.ranks:
+            self.ranks.append(rank)
+
+    """Gebe einem User einen Rang"""
+    def set_rank(self, user, rank):
+        for i in self.user:
+            if i.user_id == user.id:
+                i.rank = rank
+
+    """Erfahre den Rang eines Nutzers"""
+    def get_rank(self, user):
+        for i in self.user:
+            if i.user_id == user.id:
+                return i.rank
+
 
 class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -159,3 +179,13 @@ class Category(db.Model):
     description = db.Column(db.String(128), index=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categorys')
+
+
+class Rank(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    # Berechtigungen gerne einfügen
+    example = db.Column(db.Boolean)
+
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    user = db.relationship('User_in_Organisation', backref='rank', lazy=True)
