@@ -122,10 +122,16 @@ class Organisation(db.Model):
             self.ranks.append(rank)
 
     """Gebe einem User einen Rang"""
-    def set_rank(self, rank, user):
+    def set_rank(self, user, rank):
         for i in self.user:
             if i.user_id == user.id:
                 i.rank = rank
+
+    """Erfahre den Rang eines Nutzers"""
+    def get_rank(self, user):
+        for i in self.user:
+            if i.user_id == user.id:
+                return i.rank
 
 
 class InventoryObject(db.Model):
