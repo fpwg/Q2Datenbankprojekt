@@ -123,8 +123,8 @@ class Organisation(db.Model):
 
     """Gebe einem User einen Rang"""
     def set_rank(self, rank, user):
-        for i in user.organisations:
-            if i.organisation_id == self.id:
+        for i in self.user:
+            if i.user_id == user.id:
                 i.rank = rank
 
 
