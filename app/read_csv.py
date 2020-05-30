@@ -50,7 +50,7 @@ def get_status(ind, data):
             status.append(i[ind])
     return status
 
-"""Herausfinden, wo was steht"""
+"""Index der unterschiedlichen Spaltentypen ermitteln -> return article, room, status, category, count, description"""
 def get_indexes(data):
     article = -1
     room = -1
@@ -73,4 +73,4 @@ def get_indexes(data):
                 count = row.index(i)
             if i == "bemerkung".casefold() or i == "beschreibung".casefold() or i == "description".casefold():
                 description = row.index(i)
-        return article, room, status, category, count
+        return article, room, status, category, count, description
