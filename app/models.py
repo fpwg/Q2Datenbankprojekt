@@ -179,7 +179,13 @@ class InventoryObject(db.Model):
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
+    description = db.Column(db.String(128))
     inventoryobjects = db.relationship('InventoryObject', backref='in_room', lazy=True)
+
+    """Definiere die Beschreibung für diesen Raum"""
+    def set_description(desc):
+        if len(desc) <= 128:
+            self.description = desc
 
 
 class Status(db.Model):
