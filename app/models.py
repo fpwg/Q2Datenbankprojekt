@@ -115,16 +115,18 @@ class Organisation(db.Model):
     """Verleihe einen Gegenstand"""
     def lend_object_to(self, user, object):
         assert object in self.inventoryobjects, "Object not owned by organisation"
-        assert object.lend_to is None, "Object is already lent to a user"
+        assert len(object.lend_to) == 0, "Object is already lent to a user"
         # success
-
+        a = Lend_Objects()
+        a.user = user
+        a.inventory_object = object
 
     """Nimm einen Gegenstand zurück"""
     def take_back_object(self, object):
         assert object in self.inventoryobjects, "Object not owned by organisation"
-        assert object.lend_to is not None, "Object is not lent to a user"
+        assert not len(object.lend_to) == 0, "Object is not lent to a user"
         # success
-        object.lend_to = None
+        
 
     """Füge eine Kategorie hinzu"""
     def add_category(self, category):
