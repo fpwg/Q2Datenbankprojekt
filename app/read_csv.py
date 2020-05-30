@@ -29,9 +29,10 @@ def read_the_file(document):
 def get_categories(ind, data):
     categories = []
     for i in data:
-        for j in i[ind]:
-            if not j in categories:
-                categories.append(j)
+        if type(i[ind]) is list:
+            for j in i[ind]:
+                if not j in categories:
+                    categories.append(j)
     return categories
 
 """Alle Orte der Daten ermitteln"""
