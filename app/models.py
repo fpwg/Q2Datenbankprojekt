@@ -191,7 +191,7 @@ class Room(db.Model):
 class Status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
-    description = db.Column(db.String(128), index=True)
+    description = db.Column(db.String(128))
     inventoryobjects = db.relationship('InventoryObject', backref='has_status', lazy=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
 
@@ -204,7 +204,7 @@ class Status(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
-    description = db.Column(db.String(128), index=True)
+    description = db.Column(db.String(128))
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categorys')
 
