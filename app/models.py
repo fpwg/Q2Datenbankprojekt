@@ -211,8 +211,14 @@ class Category(db.Model):
 class Rank(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
+    description = db.Column(db.String(128))
     # Berechtigungen gerne einfügen
     example = db.Column(db.Boolean)
 
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     user = db.relationship('User_in_Organisation', backref='rank', lazy=True)
+
+    """Definiere die Beschreibung für diesen Rang"""
+    def set_description(desc):
+        if len(desc) <= 128:
+            self.description = desc
