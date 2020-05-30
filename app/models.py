@@ -118,7 +118,7 @@ class Organisation(db.Model):
     """Verleihe einen Gegenstand"""
     def lend_object_to(self, user, object):
         assert object in self.inventoryobjects, "Object not owned by organisation"
-        assert len(object.lend_to) == 0, "Object is already lent to a user"
+        assert not object.currently_lend(), "Object is already lent to a user"
         # success
         a = Lend_Objects()
         a.user = user
@@ -127,10 +127,9 @@ class Organisation(db.Model):
     """Nimm einen Gegenstand zurück"""
     def take_back_object(self, object):
         assert object in self.inventoryobjects, "Object not owned by organisation"
-        assert not len(object.lend_to) == 0, "Object is not lent to a user"
+        assert object.currently_lend(), "Object is not lent to a user"
         # success
         object.lend_to[0].end_timestamp=datetime.utcnow()
-        db.session.delete(object.lend_to[0])
 
     """Füge eine Kategorie hinzu"""
     def add_category(self, category):
@@ -188,6 +187,17 @@ class InventoryObject(db.Model):
     def set_description(self, desc):
         if len(desc) <= 256:
             self.description = desc
+
+    """Prüfe, ob ein Gegenstand aktuell verliehen ist"""
+    def currently_lend(self):
+        if self.lend_to[-1:] and not self.lend_to[-1:][0].end_timestamp:
+            return True
+        return False
+
+    """Ermittle, welche Person gerade den Gegenstand ausgeliegen hat"""
+    def currently_lend_to(self):
+        if self.currently_lend():
+            return self.lend_to[-1].user
 
 
 class Room(db.Model):
