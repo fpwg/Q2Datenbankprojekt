@@ -126,7 +126,8 @@ class Organisation(db.Model):
         assert object in self.inventoryobjects, "Object not owned by organisation"
         assert not len(object.lend_to) == 0, "Object is not lent to a user"
         # success
-        
+        db.session.delete(object.lend_to[0])
+
 
     """Füge eine Kategorie hinzu"""
     def add_category(self, category):
