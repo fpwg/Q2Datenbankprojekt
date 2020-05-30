@@ -1,7 +1,7 @@
 import csv
 
 # Let's gooooo
-# Daten einlesen
+"""Daten einlesen"""
 def read_the_file(document):
     with open(document) as file:
         read = csv.reader(file, delimiter=';')
@@ -24,35 +24,27 @@ def read_the_file(document):
                 kat = row[0]
     return data
 
-# Alle Kategorien der Daten ermitteln
-def get_kategorien(ind, data):
-    kategorien = []
+"""Alle Kategorien der Daten ermitteln"""
+def get_categories(ind, data):
+    categories = []
     for i in data:
         for j in i[ind]:
-            if not j in kategorien:
-                kategorien.append(j)
-    return kategorien
+            if not j in categories:
+                categories.append(j)
+    return categories
 
-# Alle Orte der Daten ermitteln
-def get_orte(ind, data):
-    orte = []
+"""Alle Orte der Daten ermitteln"""
+def get_rooms(ind, data):
+    rooms = []
     for i in data:
-        if not i[ind] in orte:
-            orte.append(i[ind])
-    return orte
+        if not i[ind] in rooms:
+            rooms.append(i[ind])
+    return rooms
 
-# Alle Zustände der Daten ermitteln
-def get_zustaende(ind, data):
-    zustaende = []
+"""Alle Zustände der Daten ermitteln"""
+def get_status(ind, data):
+    status = []
     for i in data:
-        if not i[ind] in zustaende:
-            zustaende.append(i[ind])
-    return zustaende
-
-
-d = "Inventur_Medientechnik_ISH_Stand_06_19.CSV"
-f = read_the_file(d)
-print(f)
-print(get_kategorien(4, f))
-print(get_orte(3, f))
-print(get_zustaende(2, f))
+        if not i[ind] in status:
+            status.append(i[ind])
+    return status
