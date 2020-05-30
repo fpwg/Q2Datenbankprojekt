@@ -1,6 +1,7 @@
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import url_for
+from datetime import datetime
 
 from flask_login import UserMixin
 
@@ -14,6 +15,8 @@ category_inventoryobject = db.Table('category_organisation',
 class Lend_Objects(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
     inventory_object_id = db.Column(db.Integer, db.ForeignKey("inventory_object.id"), primary_key=True)
+    start_timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow, primary_key=True)
+    end_timestamp = db.Column(db.DateTime, index=True)
 
     user = db.relationship('User', back_populates="borrowed_objects")
     inventory_object = db.relationship('InventoryObject', back_populates="lend_to")
@@ -126,8 +129,8 @@ class Organisation(db.Model):
         assert object in self.inventoryobjects, "Object not owned by organisation"
         assert not len(object.lend_to) == 0, "Object is not lent to a user"
         # success
+        object.lend_to[0].end_timestamp=datetime.utcnow()
         db.session.delete(object.lend_to[0])
-
 
     """Füge eine Kategorie hinzu"""
     def add_category(self, category):
