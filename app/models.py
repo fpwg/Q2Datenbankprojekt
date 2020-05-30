@@ -50,6 +50,11 @@ class User(UserMixin, db.Model):
             if old_organisation.id == i.organisation_id:
                 db.session.delete(i)
 
+    """Definiere die Beschreibung für diesen Nutzer"""
+    def set_bio(bio):
+        if len(bio) <= 256:
+            self.bio = bio
+
 
 @login.user_loader
 def load_user(id):
@@ -135,6 +140,11 @@ class Organisation(db.Model):
             if i.user_id == user.id:
                 return i.rank
 
+    """Definiere die Beschreibung für die Organisation"""
+    def set_description(self, desc):
+        if len(desc) <= 256:
+            self.description = desc
+
 
 class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -160,6 +170,11 @@ class InventoryObject(db.Model):
         if self.organisation == category.organisation:
             self.categorys.append(category)
 
+    """Definiere die Beschreibung für das Objekt"""
+    def set_description(self, desc):
+        if len(desc) <= 256:
+            self.description = desc
+
 
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -174,6 +189,11 @@ class Status(db.Model):
     inventoryobjects = db.relationship('InventoryObject', backref='has_status', lazy=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
 
+    """Definiere die Beschreibung für diesen Zustand"""
+    def set_description(desc):
+        if len(desc) <= 128:
+            self.description = desc
+
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -181,6 +201,11 @@ class Category(db.Model):
     description = db.Column(db.String(128), index=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categorys')
+
+    """Definiere die Beschreibung für diesen Zustand"""
+    def set_description(desc):
+        if len(desc) <= 128:
+            self.description = desc
 
 
 class Rank(db.Model):
