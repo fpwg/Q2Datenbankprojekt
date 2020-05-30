@@ -71,6 +71,6 @@ def get_indexes(data):
                 category = row.index(i)
             if i == "anzahl".casefold() or i == "count".casefold():
                 count = row.index(i)
-            if i == "bemerkung".casefold() or i == "beschreibung".casefold or i == "description".casefold():
+            if i == "bemerkung".casefold() or i == "beschreibung".casefold() or i == "description".casefold():
                 description = row.index(i)
         return article, room, status, category, count
