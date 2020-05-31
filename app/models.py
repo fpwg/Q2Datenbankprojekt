@@ -15,8 +15,8 @@ category_inventoryobject = db.Table('category_organisation',
 class Lend_Objects(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
     inventory_object_id = db.Column(db.Integer, db.ForeignKey("inventory_object.id"), primary_key=True)
-    start_timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow, primary_key=True)
-    end_timestamp = db.Column(db.DateTime, index=True)
+    start_timestamp = db.Column(db.DateTime, default=datetime.utcnow, primary_key=True)
+    end_timestamp = db.Column(db.DateTime)
 
     user = db.relationship('User', back_populates="borrowed_objects")
     inventory_object = db.relationship('InventoryObject', back_populates="lend_to")
@@ -182,8 +182,8 @@ class Organisation(db.Model):
 class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     article = db.Column(db.String(64), index=True)
-    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     description = db.Column(db.String(256))
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     room = db.Column(db.Integer, db.ForeignKey('room.id'))
     status = db.Column(db.Integer, db.ForeignKey('status.id'))
     categories = db.relationship('Category', secondary=category_inventoryobject, back_populates='inventoryobjects')
@@ -222,7 +222,7 @@ class InventoryObject(db.Model):
 
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True)
+    name = db.Column(db.String(64), index=True, unique=True)
     description = db.Column(db.String(128))
     inventoryobjects = db.relationship('InventoryObject', backref='in_room', lazy=True)
 
@@ -236,8 +236,8 @@ class Status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128))
-    inventoryobjects = db.relationship('InventoryObject', backref='has_status', lazy=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
+    inventoryobjects = db.relationship('InventoryObject', backref='has_status', lazy=True)
 
     """Definiere die Beschreibung für diesen Zustand"""
     def set_description(desc):
