@@ -1,6 +1,6 @@
 import csv
 from app import db
-from app.models import Room
+from app.models import Room, Category
 
 """Daten einlesen"""
 def read_the_file(document):
@@ -75,22 +75,30 @@ def get_indexes(data):
                 count = row.index(i)
             if i == "bemerkung".casefold() or i == "beschreibung".casefold() or i == "description".casefold():
                 description = row.index(i)
-        data.remove(row)
+        data.remove(data[0])
         return data, article, room, status, category, count, description
 
-"""Einfügen der Räume in die Datenbank"""
+"""Einfügen der Räume in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)"""
 def put_rooms_into_database(rooms):
     db_rooms = Room.query.all()
     #new_rooms = []
     for i in rooms:
         if not any(x.name == i for x in db_rooms):
             db.session.add(Room(name=i))
-            #new_rooms.append(room(name=i))
+            #new_rooms.append(Room(name=i))
     #return new_rooms
 
+"""Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)"""
+def put_categories_into_database(categories, organisation):
+    db_categories = Category.query.all()
+    #new_categories = []
+    for i in categories:
+        if not any(x.name == i for x in db_categories):
+            organisation.add_category(Category(name=i))
+            #new_categories.append(Category(name=i))
 
 """Einlesen einer Datei und einpflegen in die Datenbank"""
-def put_filecontents_into_database(document):
+def put_filecontents_into_database(document, organisation):
     data = read_the_file(document)
     data, article_ind, room_ind, status_ind, category_ind, count_ind, description_ind = get_indexes(data)
     categories = get_categories(category_ind, data)
@@ -98,3 +106,4 @@ def put_filecontents_into_database(document):
     statuses = get_statuses(status_ind, data)
 
     put_rooms_into_database(rooms)
+    put_categories_into_database(categories, organisation)
