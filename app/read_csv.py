@@ -52,7 +52,7 @@ def get_statuses(ind, data):
             status.append(i[ind])
     return status
 
-"""Index der unterschiedlichen Spaltentypen ermitteln -> return article, room, status, category, count, description"""
+"""Index der unterschiedlichen Spaltentypen ermitteln -> return data (ohne Beschreibungszeile), indexes -> [article, room, status, category, count, description]"""
 def get_indexes(data):
     article = -1
     room = -1
@@ -76,7 +76,8 @@ def get_indexes(data):
             if i == "bemerkung".casefold() or i == "beschreibung".casefold() or i == "description".casefold():
                 description = row.index(i)
         data.remove(data[0])
-        return data, article, room, status, category, count, description
+        indexes = [article, room, status, category, count, description]
+        return data, indexes
 
 """Einfügen der Räume in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)"""
 def put_rooms_into_database(rooms):
@@ -110,20 +111,20 @@ def put_statuses_into_database(statuses, organisation):
     #return new_statuses
 
 """Einfügen der Objekte in die Datenbank"""
-def put_object_into_database(data, organisation):
+def put_object_into_database(data, indexes, organisation):
     for i in data:
         pass
 
 """Einlesen einer Datei und einpflegen in die Datenbank"""
 def put_filecontents_into_database(document, organisation):
     data = read_the_file(document)
-    data, article_ind, room_ind, status_ind, category_ind, count_ind, description_ind = get_indexes(data)
+    data, indexes = get_indexes(data)
     if category_ind > -1:
-        categories = get_categories(category_ind, data)
+        categories = get_categories(indexes[3], data)
         put_categories_into_database(categories, organisation)
     if room_ind > -1:
-        rooms = get_rooms(room_ind, data)
+        rooms = get_rooms(indexes[1], data)
         put_rooms_into_database(rooms)
     if status_ind > -1:
-        statuses = get_statuses(status_ind, data) if status_ind > -1
+        statuses = get_statuses(indexes[2], data) if status_ind > -1
         put_statuses_into_database(statuses, organisation)
