@@ -1,6 +1,7 @@
 import csv
+from app import db
+from app.models import Room
 
-# Let's gooooo
 """Daten einlesen"""
 def read_the_file(document):
     with open(document) as file:
@@ -44,7 +45,7 @@ def get_rooms(ind, data):
     return rooms
 
 """Alle Zustände der Daten ermitteln"""
-def get_status(ind, data):
+def get_statuses(ind, data):
     status = []
     for i in data:
         if not i[ind] in status:
@@ -74,4 +75,26 @@ def get_indexes(data):
                 count = row.index(i)
             if i == "bemerkung".casefold() or i == "beschreibung".casefold() or i == "description".casefold():
                 description = row.index(i)
-        return article, room, status, category, count, description
+        data.remove(row)
+        return data, article, room, status, category, count, description
+
+"""Einfügen der Räume in die Datenbank"""
+def put_rooms_into_database(rooms):
+    db_rooms = Room.query.all()
+    #new_rooms = []
+    for i in rooms:
+        if not any(x.name == i for x in db_rooms):
+            db.session.add(Room(name=i))
+            #new_rooms.append(room(name=i))
+    #return new_rooms
+
+
+"""Einlesen einer Datei und einpflegen in die Datenbank"""
+def put_filecontents_into_database(document):
+    data = read_the_file(document)
+    data, article_ind, room_ind, status_ind, category_ind, count_ind, description_ind = get_indexes(data)
+    categories = get_categories(category_ind, data)
+    rooms = get_rooms(room_ind, data)
+    statuses = get_statuses(status_ind, data)
+
+    put_rooms_into_database(rooms)
