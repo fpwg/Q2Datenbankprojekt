@@ -89,7 +89,7 @@ def put_rooms_into_database(rooms):
             #new_rooms.append(r)
     #return new_rooms
 
-"""Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)"""
+"""Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Kategorien)"""
 def put_categories_into_database(categories, organisation):
     #new_categories = []
     for i in categories:
@@ -98,6 +98,16 @@ def put_categories_into_database(categories, organisation):
             organisation.add_category(c)
             #new_categories.append(c)
     #return new_categories
+
+"""Einfügen der Zustände in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Zustände)"""
+def put_statuses_into_database(statuses, organisation):
+    #new_statuses = []
+    for i in statuses:
+        if not any(x.name == i for x in organisation.statuses):
+            s = Status(name=i)
+            organisation.add_status(s)
+            #new_statuses.append(s)
+    #return new_statuses
 
 """Einlesen einer Datei und einpflegen in die Datenbank"""
 def put_filecontents_into_database(document, organisation):
@@ -109,3 +119,4 @@ def put_filecontents_into_database(document, organisation):
 
     put_rooms_into_database(rooms)
     put_categories_into_database(categories, organisation)
+    put_statuses_into_database(statuses, organisation)
