@@ -90,10 +90,9 @@ def put_rooms_into_database(rooms):
 
 """Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)"""
 def put_categories_into_database(categories, organisation):
-    db_categories = Category.query.all()
     #new_categories = []
     for i in categories:
-        if not any(x.name == i for x in db_categories):
+        if not any(x.name == i for x in organisation.categorys):
             organisation.add_category(Category(name=i))
             #new_categories.append(Category(name=i))
 
