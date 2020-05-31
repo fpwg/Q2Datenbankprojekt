@@ -182,7 +182,7 @@ class Organisation(db.Model):
 class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     article = db.Column(db.String(64), index=True)
-    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     description = db.Column(db.String(256))
     room = db.Column(db.Integer, db.ForeignKey('room.id'))
     status = db.Column(db.Integer, db.ForeignKey('status.id'))
@@ -237,7 +237,7 @@ class Status(db.Model):
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128))
     inventoryobjects = db.relationship('InventoryObject', backref='has_status', lazy=True)
-    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
 
     """Definiere die Beschreibung für diesen Zustand"""
     def set_description(desc):
@@ -249,7 +249,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128))
-    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categories')
 
     """Definiere die Beschreibung für diesen Zustand"""
@@ -265,7 +265,7 @@ class Rank(db.Model):
     # Berechtigungen gerne einfügen
     example = db.Column(db.Boolean)
 
-    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     user = db.relationship('User_in_Organisation', backref='rank', lazy=True)
 
     """Definiere die Beschreibung für diesen Rang"""
