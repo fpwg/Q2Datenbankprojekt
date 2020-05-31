@@ -91,23 +91,21 @@ def put_rooms_into_database(rooms):
     #return new_rooms
 
 def put_categories_into_database(categories, organisation):
-    """Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Kategorien)"""
+    """Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Kategorienamen)"""
     #new_categories = []
     for i in categories:
         if not any(x.name == i for x in organisation.categorys):
-            c = Category(name=i)
-            organisation.add_category(c)
-            #new_categories.append(c)
+            organisation.add_category(i)
+            #new_categories.append(i)
     #return new_categories
 
 def put_statuses_into_database(statuses, organisation):
-    """Einfügen der Zustände in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Zustände)"""
+    """Einfügen der Zustände in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Zustandsnamen)"""
     #new_statuses = []
     for i in statuses:
         if not any(x.name == i for x in organisation.statuses):
-            s = Status(name=i)
-            organisation.add_status(s)
-            #new_statuses.append(s)
+            organisation.add_status(i)
+            #new_statuses.append(i)
     #return new_statuses
 
 def create_object(article_list, organisation, rooms, statuses, categories, indexes):
