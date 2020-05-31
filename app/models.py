@@ -27,6 +27,7 @@ class User_in_Organisation(db.Model):
     organisation_id = db.Column(db.Integer, db.ForeignKey("organisation.id"), primary_key=True)
     rank_id = db.Column(db.Integer, db.ForeignKey("rank.id"))
 
+    rank = db.relationship('Rank', back_populates='user')
     user = db.relationship('User', back_populates="organisations")
     organisation = db.relationship('Organisation', back_populates="user")
 
@@ -77,10 +78,10 @@ class Organisation(db.Model):
     name = db.Column(db.String(64), index=True, unique=True)
     description = db.Column(db.String(256))
     user = db.relationship("User_in_Organisation", back_populates="organisation")
-    inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
-    statuses = db.relationship('Status', backref='from_organisation', lazy=True)
-    categories = db.relationship('Category', backref='from_organisation', lazy=True)
-    ranks = db.relationship('Rank', backref='from_organisation', lazy=True)
+    inventoryobjects = db.relationship('InventoryObject', back_populates='organisation')
+    statuses = db.relationship('Status', back_populates='organisation')
+    categories = db.relationship('Category', back_populates='organisation')
+    ranks = db.relationship('Rank', back_populates='organisation')
 
     """URL der Profilseite"""
     def page(self):
@@ -138,7 +139,7 @@ class Organisation(db.Model):
 
     """Entferne eine Kategorie (sie wird dabei gelöscht)"""
     def remove_category(self, category):
-        if category.organisation == self.id:
+        if category.organisation_id == self.id:
             db.session.delete(category)
 
     """Füge einen Rang hinzu"""
@@ -148,7 +149,7 @@ class Organisation(db.Model):
 
     """Entferne einen Rang (er wird dabei gelöscht)"""
     def remove_rank(self, rank):
-        if rank.organisation == self.id:
+        if rank.organisation_id == self.id:
             db.session.delete(rank)
 
     """Füge einen Zustand hinzu"""
@@ -158,7 +159,7 @@ class Organisation(db.Model):
 
     """Entferne einen Zustand (er wird dabei gelöscht)"""
     def remove_status(self, status):
-        if status.organisation == self.id:
+        if status.organisation_id == self.id:
             db.session.delete(status)
 
     """Gebe einem User einen Rang"""
@@ -183,11 +184,14 @@ class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     article = db.Column(db.String(64), index=True)
     description = db.Column(db.String(256))
-    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
-    room = db.Column(db.Integer, db.ForeignKey('room.id'))
-    status = db.Column(db.Integer, db.ForeignKey('status.id'))
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
+    room_id = db.Column(db.Integer, db.ForeignKey('room.id'))
+    status_id = db.Column(db.Integer, db.ForeignKey('status.id'))
     categories = db.relationship('Category', secondary=category_inventoryobject, back_populates='inventoryobjects')
     lend_to = db.relationship("Lend_Objects", back_populates="inventory_object")
+    organisation = db.relationship("Organisation", back_populates="inventoryobjects")
+    room = db.relationship('Room', back_populates='inventoryobjects')
+    status = db.relationship('Status', back_populates='inventoryobjects')
 
     """Ordne Gegenstand einem Raum/Ort zu"""
     def set_room(self, room):
@@ -195,12 +199,12 @@ class InventoryObject(db.Model):
 
     """Ordne einem Gegenstand einen Zustand zu"""
     def set_status(self, status):
-        if self.organisation == status.organisation:
+        if self.organisation_id == status.organisation_id:
             status.inventoryobjects.append(self)
 
     """Füge einem Gegenstand eine Kategorie zu"""
     def add_category(self, category):
-        if self.organisation == category.organisation:
+        if self.organisation_id == category.organisation_id:
             category.inventoryobjects.append(self)
 
     """Definiere die Beschreibung für das Objekt"""
@@ -224,7 +228,7 @@ class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     description = db.Column(db.String(128))
-    inventoryobjects = db.relationship('InventoryObject', backref='in_room', lazy=True)
+    inventoryobjects = db.relationship('InventoryObject', back_populates='room')
 
     """Definiere die Beschreibung für diesen Raum"""
     def set_description(desc):
@@ -236,8 +240,9 @@ class Status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128))
-    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
-    inventoryobjects = db.relationship('InventoryObject', backref='has_status', lazy=True)
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
+    inventoryobjects = db.relationship('InventoryObject', back_populates='status')
+    organisation = db.relationship('Organisation', back_populates='statuses')
 
     """Definiere die Beschreibung für diesen Zustand"""
     def set_description(desc):
@@ -249,8 +254,9 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128))
-    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categories')
+    organisation = db.relationship('Organisation', back_populates='categories')
 
     """Definiere die Beschreibung für diesen Zustand"""
     def set_description(desc):
@@ -265,8 +271,9 @@ class Rank(db.Model):
     # Berechtigungen gerne einfügen
     example = db.Column(db.Boolean)
 
-    organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
-    user = db.relationship('User_in_Organisation', backref='rank', lazy=True)
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
+    organisation = db.relationship('Organisation', back_populates='ranks')
+    user = db.relationship('User_in_Organisation', back_populates='rank')
 
     """Definiere die Beschreibung für diesen Rang"""
     def set_description(desc):
