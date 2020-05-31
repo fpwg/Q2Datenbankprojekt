@@ -79,7 +79,7 @@ class Organisation(db.Model):
     user = db.relationship("User_in_Organisation", back_populates="organisation")
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
     statuses = db.relationship('Status', backref='from_organisation', lazy=True)
-    categorys = db.relationship('Category', backref='from_organisation', lazy=True)
+    categories = db.relationship('Category', backref='from_organisation', lazy=True)
     ranks = db.relationship('Rank', backref='from_organisation', lazy=True)
 
     """URL der Profilseite"""
@@ -132,14 +132,19 @@ class Organisation(db.Model):
         object.lend_to[0].end_timestamp=datetime.utcnow()
 
     """Füge eine Kategorie hinzu"""
-    def add_category(self, category):
-        if not category in self.categorys:
-            self.categorys.append(category)
+    def add_category(self, name):
+        if not any(x.name == name for x in self.categories):
+            self.categories.append(Category(name=name))
 
     """Füge einen Rang hinzu"""
-    def add_rank(self, rank):
-        if not rank in self.ranks:
-            self.ranks.append(rank)
+    def add_rank(self, name):
+        if not any(x.name == name for x in self.ranks):
+            self.ranks.append(Rank(name=name))
+
+    """Füge einen Zustand hinzu"""
+    def add_status(self, name):
+        if not any(x.name == name for x in self.statuses):
+            self.statuses.append(Status(name=name))
 
     """Gebe einem User einen Rang"""
     def set_rank(self, user, rank):
@@ -166,22 +171,22 @@ class InventoryObject(db.Model):
     description = db.Column(db.String(256))
     room = db.Column(db.Integer, db.ForeignKey('room.id'))
     status = db.Column(db.Integer, db.ForeignKey('status.id'))
-    categorys = db.relationship('Category', secondary=category_inventoryobject, back_populates='inventoryobjects')
+    categories = db.relationship('Category', secondary=category_inventoryobject, back_populates='inventoryobjects')
     lend_to = db.relationship("Lend_Objects", back_populates="inventory_object")
 
     """Ordne Gegenstand einem Raum/Ort zu"""
     def set_room(self, room):
-        self.room = room.id
+        room.inventoryobjects.append(self)
 
     """Ordne einem Gegenstand einen Zustand zu"""
     def set_status(self, status):
         if self.organisation == status.organisation:
-            self.status = status.id
+            status.inventoryobjects.append(self)
 
     """Füge einem Gegenstand eine Kategorie zu"""
     def add_category(self, category):
         if self.organisation == category.organisation:
-            self.categorys.append(category)
+            category.inventoryobjects.append(self)
 
     """Definiere die Beschreibung für das Objekt"""
     def set_description(self, desc):
@@ -230,7 +235,7 @@ class Category(db.Model):
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128))
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categorys')
+    inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categories')
 
     """Definiere die Beschreibung für diesen Zustand"""
     def set_description(desc):
