@@ -109,14 +109,21 @@ def put_statuses_into_database(statuses, organisation):
             #new_statuses.append(s)
     #return new_statuses
 
+"""Einfügen der Objekte in die Datenbank"""
+def put_object_into_database(data, organisation):
+    for i in data:
+        pass
+
 """Einlesen einer Datei und einpflegen in die Datenbank"""
 def put_filecontents_into_database(document, organisation):
     data = read_the_file(document)
     data, article_ind, room_ind, status_ind, category_ind, count_ind, description_ind = get_indexes(data)
-    categories = get_categories(category_ind, data)
-    rooms = get_rooms(room_ind, data)
-    statuses = get_statuses(status_ind, data)
-
-    put_rooms_into_database(rooms)
-    put_categories_into_database(categories, organisation)
-    put_statuses_into_database(statuses, organisation)
+    if category_ind > -1:
+        categories = get_categories(category_ind, data)
+        put_categories_into_database(categories, organisation)
+    if room_ind > -1:
+        rooms = get_rooms(room_ind, data)
+        put_rooms_into_database(rooms)
+    if status_ind > -1:
+        statuses = get_statuses(status_ind, data) if status_ind > -1
+        put_statuses_into_database(statuses, organisation)
