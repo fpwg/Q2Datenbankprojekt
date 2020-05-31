@@ -124,7 +124,7 @@ def put_statuses_into_database(statuses, organisation):
 def create_object(article_list, organisation, rooms, statuses, categories, indexes):
     """Erstellen der einzufügenden Gegenstände"""
     # Objekt
-    inv = InventoryObject(article=article_list[indexes[0]], organisation=organisation.id)
+    inv = InventoryObject(article=article_list[indexes[0]], organisation_id=organisation.id)
     # Raum setzen
     # In Raumliste wird geschaut, welches der Objekte das passende ist -> dieses wird dann hinzugefügt
     for j in rooms:
@@ -151,9 +151,9 @@ def put_object_into_database(data, indexes, organisation):
     # Ermitteln aller Räume in der Datenbank
     rooms = Room.query.all()
     # Ermitteln aller, der Organisation zugehörigen, Zustände
-    statuses = Status.query.filter_by(organisation=organisation.id).all()
+    statuses = Status.query.filter_by(organisation_id=organisation.id).all()
     # Ermitteln aller, der Organisation zugehörigen, Kategorien
-    categories = Category.query.filter_by(organisation=organisation.id).all()
+    categories = Category.query.filter_by(organisation_id=organisation.id).all()
 
     for i in data:
         # Angabe der Anzahl auslesbar (Integer) oder nicht (bspw. Angabe "x")?
