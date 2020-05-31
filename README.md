@@ -10,3 +10,5 @@
   - **Kategorie:** category, kategorie
   - **Anzahl:** anzahl, count
   - **Bemerkung/Beschreibung:** bemerkung, beschreibung, description
+- Möglich: Überkategorien
+  - In erste Spalte schreiben, die anderen Spalten der Zeile leer lassen
