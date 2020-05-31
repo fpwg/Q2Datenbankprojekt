@@ -112,26 +112,64 @@ def put_statuses_into_database(statuses, organisation):
 
 """Einfügen der Objekte in die Datenbank"""
 def put_object_into_database(data, indexes, organisation):
+    rooms = Room.query.all()
+    statuses = Status.query.all()
+    categories = Category.query.all()
     for i in data:
-        # Objekt
-        inv = InventoryObject(article=i[indexes[0]], organisation=organisation.id)
-        # Raum
-        # Zustand
-        # Kategorie
-        # Beschreibung
-        # Anzahl
-        pass
+        if i[indexes[5]].isnumeric():
+            for y in range(int(i[indexes[5]])):
+                # Objekt
+                inv = InventoryObject(article=i[indexes[0]], organisation=organisation.id)
+                # Raum
+                for j in rooms:
+                    if j.name == i[indexes[1]]:
+                        inv.set_room(j)
+                # Zustand
+                for j in statuses:
+                    if j.name == i[indexes[2]]:
+                        inv.set_status(j)
+                # Kategorien
+                for x in i[indexes[3]]:
+                    for j in categories:
+                        if j.name == x:
+                            inv.add_category(j)
+                # Beschreibung
+                inv.set_description(i[indexes[4]])
+
+                db.session.add(inv)
+        else:
+            # Objekt
+            inv = InventoryObject(article=i[indexes[0]], organisation=organisation.id)
+            # Raum
+            for j in rooms:
+                if j.name == i[indexes[1]]:
+                    inv.set_room(j)
+            # Zustand
+            for j in statuses:
+                if j.name == i[indexes[2]]:
+                    inv.set_status(j)
+            # Kategorien
+            for x in i[indexes[3]]:
+                for j in categories:
+                    if j.name == x:
+                        inv.add_category(j)
+            # Beschreibung
+            desc = i[indexes[4]], "count: ", i[indexes[5]]
+            inv.set_description(i[indexes[4]])
+
+            db.session.add(inv)
 
 """Einlesen einer Datei und einpflegen in die Datenbank"""
 def put_filecontents_into_database(document, organisation):
     data = read_the_file(document)
     data, indexes = get_indexes(data)
-    if category_ind > -1:
+    if indexes[3] > -1:
         categories = get_categories(indexes[3], data)
         put_categories_into_database(categories, organisation)
-    if room_ind > -1:
+    if indexes[1] > -1:
         rooms = get_rooms(indexes[1], data)
         put_rooms_into_database(rooms)
-    if status_ind > -1:
-        statuses = get_statuses(indexes[2], data) if status_ind > -1
+    if indexes[2] > -1:
+        statuses = get_statuses(indexes[2], data)
         put_statuses_into_database(statuses, organisation)
+    put_object_into_database(data, indexes, organisation)
