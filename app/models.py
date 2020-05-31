@@ -79,7 +79,7 @@ class Organisation(db.Model):
     user = db.relationship("User_in_Organisation", back_populates="organisation")
     inventoryobjects = db.relationship('InventoryObject', backref='owner', lazy=True)
     statuses = db.relationship('Status', backref='from_organisation', lazy=True)
-    categorys = db.relationship('Category', backref='from_organisation', lazy=True)
+    categories = db.relationship('Category', backref='from_organisation', lazy=True)
     ranks = db.relationship('Rank', backref='from_organisation', lazy=True)
 
     """URL der Profilseite"""
@@ -133,8 +133,8 @@ class Organisation(db.Model):
 
     """Füge eine Kategorie hinzu"""
     def add_category(self, name):
-        if not any(x.name == name for x in self.categorys):
-            self.categorys.append(Category(name=name))
+        if not any(x.name == name for x in self.categories):
+            self.categories.append(Category(name=name))
 
     """Füge einen Rang hinzu"""
     def add_rank(self, name):
@@ -171,7 +171,7 @@ class InventoryObject(db.Model):
     description = db.Column(db.String(256))
     room = db.Column(db.Integer, db.ForeignKey('room.id'))
     status = db.Column(db.Integer, db.ForeignKey('status.id'))
-    categorys = db.relationship('Category', secondary=category_inventoryobject, back_populates='inventoryobjects')
+    categories = db.relationship('Category', secondary=category_inventoryobject, back_populates='inventoryobjects')
     lend_to = db.relationship("Lend_Objects", back_populates="inventory_object")
 
     """Ordne Gegenstand einem Raum/Ort zu"""
@@ -235,7 +235,7 @@ class Category(db.Model):
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128))
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categorys')
+    inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categories')
 
     """Definiere die Beschreibung für diesen Zustand"""
     def set_description(desc):
