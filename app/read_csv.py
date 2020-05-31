@@ -55,28 +55,40 @@ def get_statuses(ind, data):
 
 def get_indexes(data):
     """Index der unterschiedlichen Spaltentypen ermitteln -> return data (ohne Beschreibungszeile), indexes -> [article, room, status, category, description, count]"""
+    # Standartwert für die Indices; wenn dieser nicht geändert wird, wird dies später erkannt
     article = -1
     room = -1
     status = -1
     category = -1
     count = -1
     description = -1
+    # Auf alle Strings casefold anwenden -> Groß-/ Kleinschreibung soll kein Problem machen
     row = [x.casefold() for x in data[0]]
+    # Testen, ob das die richtige Zeile ist
     if "artikel".casefold() in row or "article".casefold() in row:
+        # Jeden Eintrag dieser Zeile auf Angaben testen - Deutsche und Englische Variante(n)
         for i in row:
+            # Artikelbezeichnung
             if i == "artikel".casefold() or i == "article".casefold():
                 article = row.index(i)
+            # Raum
             if i == "room".casefold() or i == "raum".casefold() or i == "ort".casefold():
                 room = row.index(i)
+            # Zustand
             if i == "status".casefold() or i == "zustand".casefold() or i == "funktion".casefold():
                 status = row.index(i)
+            # Kategorie
             if i == "category".casefold() or i == "kategorie".casefold():
                 category = row.index(i)
+            # Anzahl
             if i == "anzahl".casefold() or i == "count".casefold():
                 count = row.index(i)
+            # Beschreibung
             if i == "bemerkung".casefold() or i == "beschreibung".casefold() or i == "description".casefold():
                 description = row.index(i)
+        # Beschreibungszeile löschen - somit werden diese nicht als einzufügende Daten aufgenommen
         data.remove(data[0])
+        # Liste aus den Indices erstellen
         indexes = [article, room, status, category, description, count]
         return data, indexes
 
@@ -124,6 +136,7 @@ def create_object(article_list, organisation, rooms, statuses, categories, index
         if j.name == article_list[indexes[2]]:
             inv.set_status(j)
     # Kategorien
+    # Alle Kategorien des Gegenstands werden aus der Liste herausgesucht und diesem hinzugefügt
     for x in article_list[indexes[3]]:
         for j in categories:
             if j.name == x:
@@ -135,9 +148,13 @@ def create_object(article_list, organisation, rooms, statuses, categories, index
 
 def put_object_into_database(data, indexes, organisation):
     """Einfügen der Gegenstände in die Datenbank"""
+    # Ermitteln aller Räume in der Datenbank
     rooms = Room.query.all()
+    # Ermitteln aller, der Organisation zugehörigen, Zustände
     statuses = Status.query.filter_by(organisation=organisation.id).all()
+    # Ermitteln aller, der Organisation zugehörigen, Kategorien
     categories = Category.query.filter_by(organisation=organisation.id).all()
+
     for i in data:
         # Angabe der Anzahl auslesbar (Integer) oder nicht (bspw. Angabe "x")?
         if i[indexes[5]].isnumeric():
@@ -148,7 +165,7 @@ def put_object_into_database(data, indexes, organisation):
             # Der Gegenstand hat eine nicht auslesbare Anzahl -> diese Angabe wird zur Beschreibung hinzugefügt
             inv = create_object(article_list=i, organisation=organisation, rooms=rooms, statuses=statuses, categories=categories, indexes=indexes)
 
-            desc = i[indexes[4]] + " count: " + i[indexes[5]]
+            desc = i[indexes[4]] + "; count: " + i[indexes[5]]
             inv.set_description(desc)
 
             db.session.add(inv)
@@ -158,7 +175,9 @@ def put_filecontents_into_database(document, organisation):
     document: Dateipfad (str)
     organisation: Organisation Objekt
     """
+    # Alle Daten auslesen
     data = read_the_file(document)
+    # Indices der einzelnen Überschriften ermitteln + diese Zeile aus den Daten löschen
     data, indexes = get_indexes(data)
     # Neue Kategorien in db einfügen
     if indexes[3] > -1:
@@ -172,4 +191,5 @@ def put_filecontents_into_database(document, organisation):
     if indexes[2] > -1:
         statuses = get_statuses(indexes[2], data)
         put_statuses_into_database(statuses, organisation)
+    # Gegenstände erstellen und in Datenbank einfügen
     put_object_into_database(data, indexes, organisation)
