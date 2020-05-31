@@ -142,9 +142,9 @@ class Organisation(db.Model):
             self.ranks.append(Rank(name=name))
 
     """Füge einen Zustand hinzu"""
-        def add_status(self, name):
-            if not any(x.name == name for x in self.statuses):
-                self.statuses.append(Status(name=name))
+    def add_status(self, name):
+        if not any(x.name == name for x in self.statuses):
+            self.statuses.append(Status(name=name))
 
     """Gebe einem User einen Rang"""
     def set_rank(self, user, rank):
