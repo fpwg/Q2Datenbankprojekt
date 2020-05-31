@@ -13,7 +13,7 @@ def read_the_file(document):
                 # Umgehen von so ner Excel Sache in (unserer) Inventurliste
                 if row[5] == '0':
                     row[5] = '/'
-                # Wenn es "Überkategorien" gibt: Diese noch der Kategorie"spalte" hinzufügen
+                # Wenn es "Überkategorien" gibt: Diese noch der Kategoriespalte hinzufügen
                 if kat and data:
                     x = row[4]
                     row[4] = []
@@ -27,9 +27,10 @@ def read_the_file(document):
     return data
 
 def get_categories(ind, data):
-    """Alle Kategorien der Daten ermitteln"""
+    """Alle verschiedenen Kategorien der Daten ermitteln"""
     categories = []
     for i in data:
+        # Mehrere Kategorien bei einem neuen Gegenstand und kein str (hat ein Problem beim Testen gemacht)?
         if type(i[ind]) is list:
             for j in i[ind]:
                 if not j in categories:
@@ -37,7 +38,7 @@ def get_categories(ind, data):
     return categories
 
 def get_rooms(ind, data):
-    """Alle Orte der Daten ermitteln"""
+    """Alle verschiedenen Orte/Räume der Daten ermitteln"""
     rooms = []
     for i in data:
         if not i[ind] in rooms:
@@ -45,7 +46,7 @@ def get_rooms(ind, data):
     return rooms
 
 def get_statuses(ind, data):
-    """Alle Zustände der Daten ermitteln"""
+    """Alle verschiedenen Zustände der Daten ermitteln"""
     status = []
     for i in data:
         if not i[ind] in status:
@@ -112,11 +113,13 @@ def create_object(article_list, organisation, rooms, statuses, categories, index
     """Erstellen der einzufügenden Gegenstände"""
     # Objekt
     inv = InventoryObject(article=article_list[indexes[0]], organisation=organisation.id)
-    # Raum
+    # Raum setzen
+    # In Raumliste wird geschaut, welches der Objekte das passende ist -> dieses wird dann hinzugefügt
     for j in rooms:
         if j.name == article_list[indexes[1]]:
             inv.set_room(j)
     # Zustand
+    # In Zustandsliste wird nach dem passenden Zustand gesucht
     for j in statuses:
         if j.name == article_list[indexes[2]]:
             inv.set_status(j)
@@ -133,31 +136,39 @@ def create_object(article_list, organisation, rooms, statuses, categories, index
 def put_object_into_database(data, indexes, organisation):
     """Einfügen der Gegenstände in die Datenbank"""
     rooms = Room.query.all()
-    statuses = Status.query.all()
-    categories = Category.query.all()
+    statuses = Status.query.filter_by(organisation=organisation.id).all()
+    categories = Category.query.filter_by(organisation=organisation.id).all()
     for i in data:
         # Angabe der Anzahl auslesbar (Integer) oder nicht (bspw. Angabe "x")?
         if i[indexes[5]].isnumeric():
+            # Gegenstand wird so oft eingefügt, wie er in der Datei steht
             for y in range(int(i[indexes[5]])):
                 db.session.add(create_object(article_list=i, organisation=organisation, rooms=rooms, statuses=statuses, categories=categories, indexes=indexes))
         else:
+            # Der Gegenstand hat eine nicht auslesbare Anzahl -> diese Angabe wird zur Beschreibung hinzugefügt
             inv = create_object(article_list=i, organisation=organisation, rooms=rooms, statuses=statuses, categories=categories, indexes=indexes)
 
-            desc = i[indexes[4]], "count: ", i[indexes[5]]
-            inv.set_description(i[indexes[4]])
+            desc = i[indexes[4]] + " count: " + i[indexes[5]]
+            inv.set_description(desc)
 
             db.session.add(inv)
 
 def put_filecontents_into_database(document, organisation):
-    """Einlesen einer Datei und einpflegen der Gegenstände in die Datenbank"""
+    """Einlesen einer Datei und Einpflegen der Gegenstände in die Datenbank
+    document: Dateipfad (str)
+    organisation: Organisation Objekt
+    """
     data = read_the_file(document)
     data, indexes = get_indexes(data)
+    # Neue Kategorien in db einfügen
     if indexes[3] > -1:
         categories = get_categories(indexes[3], data)
         put_categories_into_database(categories, organisation)
+    # Neue Räume in db einfügen
     if indexes[1] > -1:
         rooms = get_rooms(indexes[1], data)
         put_rooms_into_database(rooms)
+    # Neue Zustände in db einfügen
     if indexes[2] > -1:
         statuses = get_statuses(indexes[2], data)
         put_statuses_into_database(statuses, organisation)
