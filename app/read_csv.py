@@ -2,8 +2,8 @@ import csv
 from app import db
 from app.models import Room, Category, Status, InventoryObject
 
-"""Daten einlesen"""
 def read_the_file(document):
+    """Daten einlesen"""
     with open(document) as file:
         read = csv.reader(file, delimiter=';')
         data = []
@@ -26,8 +26,8 @@ def read_the_file(document):
                 kat = row[0]
     return data
 
-"""Alle Kategorien der Daten ermitteln"""
 def get_categories(ind, data):
+    """Alle Kategorien der Daten ermitteln"""
     categories = []
     for i in data:
         if type(i[ind]) is list:
@@ -36,24 +36,24 @@ def get_categories(ind, data):
                     categories.append(j)
     return categories
 
-"""Alle Orte der Daten ermitteln"""
 def get_rooms(ind, data):
+    """Alle Orte der Daten ermitteln"""
     rooms = []
     for i in data:
         if not i[ind] in rooms:
             rooms.append(i[ind])
     return rooms
 
-"""Alle Zustände der Daten ermitteln"""
 def get_statuses(ind, data):
+    """Alle Zustände der Daten ermitteln"""
     status = []
     for i in data:
         if not i[ind] in status:
             status.append(i[ind])
     return status
 
-"""Index der unterschiedlichen Spaltentypen ermitteln -> return data (ohne Beschreibungszeile), indexes -> [article, room, status, category, description, count]"""
 def get_indexes(data):
+    """Index der unterschiedlichen Spaltentypen ermitteln -> return data (ohne Beschreibungszeile), indexes -> [article, room, status, category, description, count]"""
     article = -1
     room = -1
     status = -1
@@ -79,8 +79,8 @@ def get_indexes(data):
         indexes = [article, room, status, category, description, count]
         return data, indexes
 
-"""Einfügen der Räume in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)"""
 def put_rooms_into_database(rooms):
+    """Einfügen der Räume in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)"""
     db_rooms = Room.query.all()
     #new_rooms = []
     for i in rooms:
@@ -90,8 +90,8 @@ def put_rooms_into_database(rooms):
             #new_rooms.append(r)
     #return new_rooms
 
-"""Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Kategorien)"""
 def put_categories_into_database(categories, organisation):
+    """Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Kategorien)"""
     #new_categories = []
     for i in categories:
         if not any(x.name == i for x in organisation.categorys):
@@ -100,8 +100,8 @@ def put_categories_into_database(categories, organisation):
             #new_categories.append(c)
     #return new_categories
 
-"""Einfügen der Zustände in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Zustände)"""
 def put_statuses_into_database(statuses, organisation):
+    """Einfügen der Zustände in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Zustände)"""
     #new_statuses = []
     for i in statuses:
         if not any(x.name == i for x in organisation.statuses):
@@ -110,8 +110,8 @@ def put_statuses_into_database(statuses, organisation):
             #new_statuses.append(s)
     #return new_statuses
 
-"""Erstellen der einzufügenden Objekte"""
 def create_object(article_list, organisation, rooms, statuses, categories, indexes):
+    """Erstellen der einzufügenden Gegenstände"""
     # Objekt
     inv = InventoryObject(article=article_list[indexes[0]], organisation=organisation.id)
     # Raum
@@ -132,12 +132,13 @@ def create_object(article_list, organisation, rooms, statuses, categories, index
 
     return inv
 
-"""Einfügen der Objekte in die Datenbank"""
 def put_object_into_database(data, indexes, organisation):
+    """Einfügen der Gegenstände in die Datenbank"""
     rooms = Room.query.all()
     statuses = Status.query.all()
     categories = Category.query.all()
     for i in data:
+        # Angabe der Anzahl auslesbar (Integer) oder nicht (bspw. Angabe "x")?
         if i[indexes[5]].isnumeric():
             for y in range(int(i[indexes[5]])):
                 db.session.add(create_object(article_list=i, organisation=organisation, rooms=rooms, statuses=statuses, categories=categories, indexes=indexes))
@@ -149,8 +150,8 @@ def put_object_into_database(data, indexes, organisation):
 
             db.session.add(inv)
 
-"""Einlesen einer Datei und einpflegen in die Datenbank"""
 def put_filecontents_into_database(document, organisation):
+    """Einlesen einer Datei und einpflegen der Gegenstände in die Datenbank"""
     data = read_the_file(document)
     data, indexes = get_indexes(data)
     if indexes[3] > -1:
