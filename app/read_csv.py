@@ -110,6 +110,28 @@ def put_statuses_into_database(statuses, organisation):
             #new_statuses.append(s)
     #return new_statuses
 
+"""Erstellen der einzufügenden Objekte"""
+def create_object(article_list, organisation, rooms, statuses, categories, indexes):
+    # Objekt
+    inv = InventoryObject(article=article_list[indexes[0]], organisation=organisation.id)
+    # Raum
+    for j in rooms:
+        if j.name == article_list[indexes[1]]:
+            inv.set_room(j)
+    # Zustand
+    for j in statuses:
+        if j.name == article_list[indexes[2]]:
+            inv.set_status(j)
+    # Kategorien
+    for x in article_list[indexes[3]]:
+        for j in categories:
+            if j.name == x:
+                inv.add_category(j)
+    # Beschreibung
+    inv.set_description(article_list[indexes[4]])
+
+    return inv
+
 """Einfügen der Objekte in die Datenbank"""
 def put_object_into_database(data, indexes, organisation):
     rooms = Room.query.all()
@@ -118,42 +140,10 @@ def put_object_into_database(data, indexes, organisation):
     for i in data:
         if i[indexes[5]].isnumeric():
             for y in range(int(i[indexes[5]])):
-                # Objekt
-                inv = InventoryObject(article=i[indexes[0]], organisation=organisation.id)
-                # Raum
-                for j in rooms:
-                    if j.name == i[indexes[1]]:
-                        inv.set_room(j)
-                # Zustand
-                for j in statuses:
-                    if j.name == i[indexes[2]]:
-                        inv.set_status(j)
-                # Kategorien
-                for x in i[indexes[3]]:
-                    for j in categories:
-                        if j.name == x:
-                            inv.add_category(j)
-                # Beschreibung
-                inv.set_description(i[indexes[4]])
-
-                db.session.add(inv)
+                db.session.add(create_object(article_list=i, organisation=organisation, rooms=rooms, statuses=statuses, categories=categories, indexes=indexes))
         else:
-            # Objekt
-            inv = InventoryObject(article=i[indexes[0]], organisation=organisation.id)
-            # Raum
-            for j in rooms:
-                if j.name == i[indexes[1]]:
-                    inv.set_room(j)
-            # Zustand
-            for j in statuses:
-                if j.name == i[indexes[2]]:
-                    inv.set_status(j)
-            # Kategorien
-            for x in i[indexes[3]]:
-                for j in categories:
-                    if j.name == x:
-                        inv.add_category(j)
-            # Beschreibung
+            inv = create_object(article_list=i, organisation=organisation, rooms=rooms, statuses=statuses, categories=categories, indexes=indexes)
+
             desc = i[indexes[4]], "count: ", i[indexes[5]]
             inv.set_description(i[indexes[4]])
 
