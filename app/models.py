@@ -1,6 +1,7 @@
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import url_for
+from datetime import datetime
 
 from flask_login import UserMixin
 
@@ -9,6 +10,16 @@ category_inventoryobject = db.Table('category_organisation',
     db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True),
     db.Column('inventoryobject_id', db.Integer, db.ForeignKey('inventory_object.id'), primary_key=True)
 )
+
+
+class Lend_Objects(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    inventory_object_id = db.Column(db.Integer, db.ForeignKey("inventory_object.id"), primary_key=True)
+    start_timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow, primary_key=True)
+    end_timestamp = db.Column(db.DateTime, index=True)
+
+    user = db.relationship('User', back_populates="borrowed_objects")
+    inventory_object = db.relationship('InventoryObject', back_populates="lend_to")
 
 
 class User_in_Organisation(db.Model):
@@ -27,7 +38,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     bio = db.Column(db.String(256))
     organisations = db.relationship("User_in_Organisation", back_populates="user")
-    borrowed_objects = db.relationship("InventoryObject", backref='borrowed_by', lazy='dynamic')
+    borrowed_objects = db.relationship("Lend_Objects", back_populates="user")
 
     """URL der Profilseite"""
     def page(self):
@@ -107,16 +118,18 @@ class Organisation(db.Model):
     """Verleihe einen Gegenstand"""
     def lend_object_to(self, user, object):
         assert object in self.inventoryobjects, "Object not owned by organisation"
-        assert object.lend_to is None, "Object is already lent to a user"
+        assert not object.currently_lend(), "Object is already lent to a user"
         # success
-        object.lend_to = user
+        a = Lend_Objects()
+        a.user = user
+        a.inventory_object = object
 
     """Nimm einen Gegenstand zurück"""
     def take_back_object(self, object):
         assert object in self.inventoryobjects, "Object not owned by organisation"
-        assert object.lend_to is not None, "Object is not lent to a user"
+        assert object.currently_lend(), "Object is not lent to a user"
         # success
-        object.lend_to = None
+        object.lend_to[0].end_timestamp=datetime.utcnow()
 
     """Füge eine Kategorie hinzu"""
     def add_category(self, category):
@@ -151,10 +164,10 @@ class InventoryObject(db.Model):
     article = db.Column(db.String(64), index=True)
     organisation = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     description = db.Column(db.String(256))
-    lend_to = db.Column(db.Integer, db.ForeignKey('user.id'))
     room = db.Column(db.Integer, db.ForeignKey('room.id'))
     status = db.Column(db.Integer, db.ForeignKey('status.id'))
     categorys = db.relationship('Category', secondary=category_inventoryobject, back_populates='inventoryobjects')
+    lend_to = db.relationship("Lend_Objects", back_populates="inventory_object")
 
     """Ordne Gegenstand einem Raum/Ort zu"""
     def set_room(self, room):
@@ -174,6 +187,17 @@ class InventoryObject(db.Model):
     def set_description(self, desc):
         if len(desc) <= 256:
             self.description = desc
+
+    """Prüfe, ob ein Gegenstand aktuell verliehen ist"""
+    def currently_lend(self):
+        if self.lend_to[-1:] and not self.lend_to[-1:][0].end_timestamp:
+            return True
+        return False
+
+    """Ermittle, welche Person gerade den Gegenstand ausgeliegen hat"""
+    def currently_lend_to(self):
+        if self.currently_lend():
+            return self.lend_to[-1].user
 
 
 class Room(db.Model):
