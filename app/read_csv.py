@@ -84,8 +84,9 @@ def put_rooms_into_database(rooms):
     #new_rooms = []
     for i in rooms:
         if not any(x.name == i for x in db_rooms):
-            db.session.add(Room(name=i))
-            #new_rooms.append(Room(name=i))
+            r = Room(name=i)
+            db.session.add(r)
+            #new_rooms.append(r)
     #return new_rooms
 
 """Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)"""
@@ -93,8 +94,10 @@ def put_categories_into_database(categories, organisation):
     #new_categories = []
     for i in categories:
         if not any(x.name == i for x in organisation.categorys):
-            organisation.add_category(Category(name=i))
-            #new_categories.append(Category(name=i))
+            c = Category(name=i)
+            organisation.add_category(c)
+            #new_categories.append(c)
+    #return new_categories
 
 """Einlesen einer Datei und einpflegen in die Datenbank"""
 def put_filecontents_into_database(document, organisation):
