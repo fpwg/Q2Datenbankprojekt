@@ -136,15 +136,30 @@ class Organisation(db.Model):
         if not any(x.name == name for x in self.categories):
             self.categories.append(Category(name=name))
 
+    """Entferne eine Kategorie (sie wird dabei gelöscht)"""
+    def remove_category(self, category):
+        if category.organisation == self.id:
+            db.session.delete(category)
+
     """Füge einen Rang hinzu"""
     def add_rank(self, name):
         if not any(x.name == name for x in self.ranks):
             self.ranks.append(Rank(name=name))
 
+    """Entferne einen Rang (er wird dabei gelöscht)"""
+    def remove_rank(self, rank):
+        if rank.organisation == self.id:
+            db.session.delete(rank)
+
     """Füge einen Zustand hinzu"""
     def add_status(self, name):
         if not any(x.name == name for x in self.statuses):
             self.statuses.append(Status(name=name))
+
+    """Entferne einen Zustand (er wird dabei gelöscht)"""
+    def remove_status(self, status):
+        if status.organisation == self.id:
+            db.session.delete(status)
 
     """Gebe einem User einen Rang"""
     def set_rank(self, user, rank):
