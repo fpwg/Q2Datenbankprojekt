@@ -158,17 +158,17 @@ class InventoryObject(db.Model):
 
     """Ordne Gegenstand einem Raum/Ort zu"""
     def set_room(self, room):
-        self.room = room.id
+        room.inventoryobjects.append(self)
 
     """Ordne einem Gegenstand einen Zustand zu"""
     def set_status(self, status):
         if self.organisation == status.organisation:
-            self.status = status.id
+            status.inventoryobjects.append(self)
 
     """Füge einem Gegenstand eine Kategorie zu"""
     def add_category(self, category):
         if self.organisation == category.organisation:
-            self.categorys.append(category)
+            category.inventoryobjects.append(self)
 
     """Definiere die Beschreibung für das Objekt"""
     def set_description(self, desc):
