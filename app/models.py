@@ -145,6 +145,9 @@ class Organisation(db.Model):
         if len(desc) <= 256:
             self.description = desc
 
+    def add_status(self, status):
+        if not status in self.statuses:
+            self.statuses.append(status)
 
 class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
