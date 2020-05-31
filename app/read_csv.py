@@ -1,6 +1,6 @@
 import csv
 from app import db
-from app.models import Room, Category
+from app.models import Room, Category, Status, InventoryObject
 
 """Daten einlesen"""
 def read_the_file(document):
@@ -52,7 +52,7 @@ def get_statuses(ind, data):
             status.append(i[ind])
     return status
 
-"""Index der unterschiedlichen Spaltentypen ermitteln -> return data (ohne Beschreibungszeile), indexes -> [article, room, status, category, count, description]"""
+"""Index der unterschiedlichen Spaltentypen ermitteln -> return data (ohne Beschreibungszeile), indexes -> [article, room, status, category, description, count]"""
 def get_indexes(data):
     article = -1
     room = -1
@@ -76,7 +76,7 @@ def get_indexes(data):
             if i == "bemerkung".casefold() or i == "beschreibung".casefold() or i == "description".casefold():
                 description = row.index(i)
         data.remove(data[0])
-        indexes = [article, room, status, category, count, description]
+        indexes = [article, room, status, category, description, count]
         return data, indexes
 
 """Einfügen der Räume in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)"""
@@ -113,6 +113,13 @@ def put_statuses_into_database(statuses, organisation):
 """Einfügen der Objekte in die Datenbank"""
 def put_object_into_database(data, indexes, organisation):
     for i in data:
+        # Objekt
+        inv = InventoryObject(article=i[indexes[0]], organisation=organisation.id)
+        # Raum
+        # Zustand
+        # Kategorie
+        # Beschreibung
+        # Anzahl
         pass
 
 """Einlesen einer Datei und einpflegen in die Datenbank"""
