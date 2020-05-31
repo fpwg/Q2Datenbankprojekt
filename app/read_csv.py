@@ -107,7 +107,7 @@ def put_categories_into_database(categories, organisation):
     """Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Kategorienamen)"""
     #new_categories = []
     for i in categories:
-        if not any(x.name == i for x in organisation.categorys):
+        if not any(x.name == i for x in organisation.categories):
             organisation.add_category(i)
             #new_categories.append(i)
     #return new_categories
