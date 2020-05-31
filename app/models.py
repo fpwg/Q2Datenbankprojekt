@@ -132,14 +132,19 @@ class Organisation(db.Model):
         object.lend_to[0].end_timestamp=datetime.utcnow()
 
     """Füge eine Kategorie hinzu"""
-    def add_category(self, category):
-        if not category in self.categorys:
-            self.categorys.append(category)
+    def add_category(self, name):
+        if not any(x.name == name for x in self.categorys):
+            self.categorys.append(Category(name=name))
 
     """Füge einen Rang hinzu"""
-    def add_rank(self, rank):
-        if not rank in self.ranks:
-            self.ranks.append(rank)
+    def add_rank(self, name):
+        if not any(x.name == name for x in self.ranks):
+            self.ranks.append(Rank(name=name))
+
+    """Füge einen Zustand hinzu"""
+    def add_status(self, name):
+        if not any(x.name == name for x in self.statuses):
+            self.statuses.append(Status(name=name))
 
     """Gebe einem User einen Rang"""
     def set_rank(self, user, rank):
@@ -158,9 +163,6 @@ class Organisation(db.Model):
         if len(desc) <= 256:
             self.description = desc
 
-    def add_status(self, status):
-        if not status in self.statuses:
-            self.statuses.append(status)
 
 class InventoryObject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
