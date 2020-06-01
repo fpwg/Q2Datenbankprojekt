@@ -76,6 +76,7 @@ def organisations():
 @app.route('/organisations/<name>')
 def organisation(name):
     organisation = Organisation.query.filter_by(name=name).first_or_404()
+
     return render_template('organisation.html', organisation=organisation)
 
 
@@ -87,7 +88,6 @@ def usersettings():
         return redirect(url_for('index'))
     form = UserSettingsForm()
     if form.validate_on_submit():
-        print ('b')
         if not current_user.check_password(form.confirmation.data):
             return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Wrong password, no changes made')
         username = form.change_username.data
@@ -116,4 +116,5 @@ def usersettings():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    return render_template('user.html', user=user)
+    organisations = user.organisations
+    return render_template('user.html', user=user, organisations=organisations)

@@ -10,10 +10,10 @@
       <td>Name</td>
       <td>Email</td>
     </tr>
-    {% for user in organisation.user %}
+    {% for user_rel in organisation.user %}
     <tr>
-        <td><a href="{{ url_for('user', username=user.username) }}">{{ user.username }}</a></td>
-        <td><a href="mailto:{{user.email}}">{{user.email}}</a></td>
+        <td><a href="{{ url_for('user', username=user_rel.user.username) }}">{{ user_rel.user.username }}</a></td>
+        <td><a href="mailto:{{user_rel.user.email}}">{{user_rel.user.email}}</a></td>
     </tr>
     {% endfor %}
   </table>
