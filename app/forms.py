@@ -41,6 +41,7 @@ class OrganisationCreationForm(FlaskForm):
 class UserSettingsForm(FlaskForm):
     change_username = StringField('New Username')
     change_email = StringField('New Email')
+    change_bio = StringField('Write about yourself')
     change_password = PasswordField('Confirm New Password')
     change_password_confirm = PasswordField('Confirm New Password', validators=[EqualTo('change_password')])
     confirmation = PasswordField('Confirm with old password', validators=[DataRequired()])

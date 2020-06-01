@@ -92,7 +92,8 @@ def usersettings():
             return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Wrong password, no changes made')
         username = form.change_username.data
         email = form.change_email.data
-        password=form.change_password.data
+        password = form.change_password.data
+        bio = form.change_bio.data
         if email:
             try:
                  valid = validate_email(email)
@@ -107,6 +108,8 @@ def usersettings():
             else:
                 db.session.commit()
                 return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'No valid imput')
+        if bio:
+            current_user.bio=bio
         db.session.commit()
         return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Your changes are made!')
     return render_template('usersettings.html', title='Settings', form=UserSettingsForm())
