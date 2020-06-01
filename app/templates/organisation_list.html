@@ -4,6 +4,11 @@
   <h1>
     Alle Organisationen
   </h1>
+  {% if not current_user.is_anonymous%}
+  <p>
+    Neue Organisation <a href="{{ url_for('register_organisation') }}">erstellen</a>
+  </p>
+  {% endif %}
   <table>
     <tr style="font-weight: bold;">
       <td>Name</td>
