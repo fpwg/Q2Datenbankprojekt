@@ -3,6 +3,7 @@
 ## Vorraussetzungen zum Einlesen von Dateien in Datenbank:
 
 - CSV Datei
+- Delimiter: ;
 - Oben Zeile mit Benennung, was jede Spalte macht
   - **Name/Bezeichnung:**  artikel, article
   - **Ort/Raum:** room, raum, ort

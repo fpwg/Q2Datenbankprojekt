@@ -3,17 +3,17 @@ from app import db
 from app.models import Room, Category, Status, InventoryObject
 
 def read_the_file(document):
-    """Daten einlesen"""
+    """Daten aus einer CSV-Datei einlesen"""
     with open(document) as file:
         read = csv.reader(file, delimiter=';')
         data = []
         for row in read:
-            # Auswahl von Reihen mit Inhalt
+            # Auswahl von Reihen mit Inhalt (=> Vorraussetzungen)
             if row[0] and row[1]:
-                # Umgehen von so ner Excel Sache in (unserer) Inventurliste
+                # Umgehen von so ner Excel Sache (unsere Inventurliste)
                 if row[5] == '0':
                     row[5] = '/'
-                # Wenn es "Überkategorien" gibt: Diese noch der Kategoriespalte hinzufügen
+                # Wenn es Überkategorien gibt den Kategorien hinzufügen
                 if kat and data:
                     x = row[4]
                     row[4] = []
@@ -21,8 +21,8 @@ def read_the_file(document):
                     row[4].append(x)
                 # Zeile der Datenliste hinzufügen
                 data.append(row)
+            # Keine richtige Datenzeile => es ist es eine Überkategorie
             elif row[0]:
-                # Wenn es keine richtige Datenzeile ist, bedeutet das, dass hier eine Oberkategorie steht - wird hiermit erkannt
                 kat = row[0]
     return data
 
@@ -30,7 +30,8 @@ def get_categories(ind, data):
     """Alle verschiedenen Kategorien der Daten ermitteln"""
     categories = []
     for i in data:
-        # Mehrere Kategorien bei einem neuen Gegenstand und kein str (hat ein Problem beim Testen gemacht)?
+        # Mehrere Kategorien bei einem neuen Gegenstand und kein str?
+        # (hat ein Problem beim Testen gemacht)
         if type(i[ind]) is list:
             for j in i[ind]:
                 if not j in categories:
@@ -54,46 +55,60 @@ def get_statuses(ind, data):
     return status
 
 def get_indexes(data):
-    """Index der unterschiedlichen Spaltentypen ermitteln -> return data (ohne Beschreibungszeile), indexes -> [article, room, status, category, description, count]"""
-    # Standartwert für die Indices; wenn dieser nicht geändert wird, wird dies später erkannt
+    """Index der unterschiedlichen Spaltentypen ermitteln
+
+    return:
+        list: data (ohne Beschreibungszeile)
+        list: indexes [article, room, status, category, description, count]
+    """
+
+    # Standartwert für die Indices; wenn dieser nicht geändert wird,
+    # wird dies später erkannt
     article = -1
     room = -1
     status = -1
     category = -1
     count = -1
     description = -1
-    # Auf alle Strings casefold anwenden -> Groß-/ Kleinschreibung soll kein Problem machen
-    row = [x.casefold() for x in data[0]]
-    # Testen, ob das die richtige Zeile ist
-    if "artikel".casefold() in row or "article".casefold() in row:
-        # Jeden Eintrag dieser Zeile auf Angaben testen - Deutsche und Englische Variante(n)
-        for i in row:
-            # Artikelbezeichnung
-            if i == "artikel".casefold() or i == "article".casefold():
-                article = row.index(i)
-            # Raum
-            if i == "room".casefold() or i == "raum".casefold() or i == "ort".casefold():
-                room = row.index(i)
-            # Zustand
-            if i == "status".casefold() or i == "zustand".casefold() or i == "funktion".casefold():
-                status = row.index(i)
-            # Kategorie
-            if i == "category".casefold() or i == "kategorie".casefold():
-                category = row.index(i)
-            # Anzahl
-            if i == "anzahl".casefold() or i == "count".casefold():
-                count = row.index(i)
-            # Beschreibung
-            if i == "bemerkung".casefold() or i == "beschreibung".casefold() or i == "description".casefold():
-                description = row.index(i)
-        # Beschreibungszeile löschen - somit werden diese nicht als einzufügende Daten aufgenommen
-        data.remove(data[0])
-        # Liste aus den Indices erstellen
-        indexes = [article, room, status, category, description, count]
-        return data, indexes
+    # Daten werden durchlaufen, bis es eine Definitionszeile ist
+    for i in data:
+        # Groß-/ Kleinschreibung soll kein Problem machen
+        row = [x.casefold() for x in i]
+        # Testen, ob das die richtige Zeile ist
+        if "artikel".casefold() in row or "article".casefold() in row:
+            # Jeden Eintrag dieser Zeile auf Angaben testen
+            # Deutsche und Englische Variante(n)
+            for i in row:
+                # Artikelbezeichnung
+                if i == "artikel".casefold() or i == "article".casefold():
+                    article = row.index(i)
+                # Raum
+                if i == "room".casefold() or i == "raum".casefold() or i == "ort".casefold():
+                    room = row.index(i)
+                # Zustand
+                if i == "status".casefold() or i == "zustand".casefold() or i == "funktion".casefold():
+                    status = row.index(i)
+                # Kategorie
+                if i == "category".casefold() or i == "kategorie".casefold():
+                    category = row.index(i)
+                # Anzahl
+                if i == "anzahl".casefold() or i == "count".casefold():
+                    count = row.index(i)
+                # Beschreibung
+                if i == "bemerkung".casefold() or i == "beschreibung".casefold() or i == "description".casefold():
+                    description = row.index(i)
+            # Beschreibungszeile löschen - somit werden diese nicht als
+            # einzufügende Daten aufgenommen
+            data.remove(data[0])
+            # Liste aus den Indices erstellen
+            indexes = [article, room, status, category, description, count]
+            return data, indexes
 
 def put_rooms_into_database(rooms):
-    """Einfügen der Räume in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)"""
+    """Einfügen der Räume in die Datenbank
+    (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Räume)
+    """
+
     db_rooms = Room.query.all()
     #new_rooms = []
     for i in rooms:
@@ -104,7 +119,10 @@ def put_rooms_into_database(rooms):
     #return new_rooms
 
 def put_categories_into_database(categories, organisation):
-    """Einfügen der Kategorien in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Kategorienamen)"""
+    """Einfügen der Kategorien in die Datenbank
+    (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Kategorienamen)
+    """
+
     #new_categories = []
     for i in categories:
         if not any(x.name == i for x in organisation.categories):
@@ -113,7 +131,10 @@ def put_categories_into_database(categories, organisation):
     #return new_categories
 
 def put_statuses_into_database(statuses, organisation):
-    """Einfügen der Zustände in die Datenbank (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Zustandsnamen)"""
+    """Einfügen der Zustände in die Datenbank
+    (+ wenn auskommentierte Sachen eingefügt werden return der neu eingefügten Zustandsnamen)
+    """
+
     #new_statuses = []
     for i in statuses:
         if not any(x.name == i for x in organisation.statuses):
@@ -126,7 +147,8 @@ def create_object(article_list, organisation, rooms, statuses, categories, index
     # Objekt
     inv = InventoryObject(article=article_list[indexes[0]], organisation_id=organisation.id)
     # Raum setzen
-    # In Raumliste wird geschaut, welches der Objekte das passende ist -> dieses wird dann hinzugefügt
+    # In Raumliste wird geschaut, welches der Raumobjekte passt
+    # -> dieses wird dann dem Gegenstand hinzugefügt
     for j in rooms:
         if j.name == article_list[indexes[1]]:
             inv.set_room(j)
@@ -136,7 +158,8 @@ def create_object(article_list, organisation, rooms, statuses, categories, index
         if j.name == article_list[indexes[2]]:
             inv.set_status(j)
     # Kategorien
-    # Alle Kategorien des Gegenstands werden aus der Liste herausgesucht und diesem hinzugefügt
+    # Alle Kategorien des Gegenstands werden aus der Liste ausgewählt
+    #  und diesem hinzugefügt
     for x in article_list[indexes[3]]:
         for j in categories:
             if j.name == x:
@@ -156,13 +179,15 @@ def put_object_into_database(data, indexes, organisation):
     categories = Category.query.filter_by(organisation_id=organisation.id).all()
 
     for i in data:
-        # Angabe der Anzahl auslesbar (Integer) oder nicht (bspw. Angabe "x")?
+        # Angabe der Anzahl auslesbar (Integer) oder nicht
+        # (bspw. Angabe "x")?
         if i[indexes[5]].isnumeric():
-            # Gegenstand wird so oft eingefügt, wie er in der Datei steht
+            # Gegenstand wird so oft eingefügt, wie er vorhanden ist
             for y in range(int(i[indexes[5]])):
                 db.session.add(create_object(article_list=i, organisation=organisation, rooms=rooms, statuses=statuses, categories=categories, indexes=indexes))
         else:
-            # Der Gegenstand hat eine nicht auslesbare Anzahl -> diese Angabe wird zur Beschreibung hinzugefügt
+            # Der Gegenstand hat eine nicht auslesbare Anzahl;
+            # hinzufügen dieser Angabe zur Beschreibung
             inv = create_object(article_list=i, organisation=organisation, rooms=rooms, statuses=statuses, categories=categories, indexes=indexes)
 
             desc = i[indexes[4]] + "; count: " + i[indexes[5]]
@@ -172,12 +197,14 @@ def put_object_into_database(data, indexes, organisation):
 
 def put_filecontents_into_database(document, organisation):
     """Einlesen einer Datei und Einpflegen der Gegenstände in die Datenbank
-    document: Dateipfad (str)
-    organisation: Organisation Objekt
+
+    Args:
+        document: Dateipfad (str)
+        organisation: Organisation(-sobjekt), dem die Gegenstände hinzugefügt werden
     """
     # Alle Daten auslesen
     data = read_the_file(document)
-    # Indices der einzelnen Überschriften ermitteln + diese Zeile aus den Daten löschen
+    # Indices der einzelnen Überschriften ermitteln
     data, indexes = get_indexes(data)
     # Neue Kategorien in db einfügen
     if indexes[3] > -1:
