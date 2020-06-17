@@ -17,6 +17,23 @@
     </tr>
     {% endfor %}
   </table>
+  <h2>Objekte</h2>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>Name</td>
+      <td>Beschreibung</td>
+      <td>Zustand</td>
+      <td>Kategorien</td>
+    </tr>
+    {% for object in objects %}
+    <tr>
+        <td>{{ object.article }}</td>
+        <td>{{ object.description }}</td>
+        <td>{{ object.status.name }}</td>
+        <td>{% for cat in object.categories %} {{ cat.name }} {% endfor %}</td>
+    </tr>
+    {% endfor %}
+  </table>
 
 
 {% endblock %}

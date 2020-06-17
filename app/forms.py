@@ -56,3 +56,14 @@ class UserSettingsForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('A user with this email is already registered.')
+
+class ChangeRankForm(FlaskForm):
+    rank_name = StringField()
+    delete_organisation = BooleanField()
+    grant_ranks = BooleanField()
+    add_users = BooleanField()
+    edit_organisation = BooleanField()
+    lend_objects = BooleanField()
+
+    submit = SubmitField("save")
+

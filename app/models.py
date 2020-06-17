@@ -63,11 +63,6 @@ class User(UserMixin, db.Model):
             if old_organisation.id == i.organisation_id:
                 db.session.delete(i)
 
-    """Definiere die Beschreibung für diesen Nutzer"""
-    def set_bio(bio):
-        if len(bio) <= 256:
-            self.bio = bio
-
 
 @login.user_loader
 def load_user(id):
@@ -213,11 +208,6 @@ class InventoryObject(db.Model):
         if self.organisation_id == category.organisation_id:
             category.inventoryobjects.append(self)
 
-    """Definiere die Beschreibung für das Objekt"""
-    def set_description(self, desc):
-        if len(desc) <= 256:
-            self.description = desc
-
     """Prüfe, ob ein Gegenstand aktuell verliehen ist"""
     def currently_lend(self):
         if self.lend_to[-1:] and not self.lend_to[-1:][0].end_timestamp:
@@ -237,11 +227,6 @@ class Room(db.Model):
 
     inventoryobjects = db.relationship('InventoryObject', back_populates='room')
 
-    """Definiere die Beschreibung für diesen Raum"""
-    def set_description(desc):
-        if len(desc) <= 128:
-            self.description = desc
-
 
 class Status(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -252,11 +237,6 @@ class Status(db.Model):
     organisation = db.relationship('Organisation', back_populates='statuses')
 
     inventoryobjects = db.relationship('InventoryObject', back_populates='status')
-
-    """Definiere die Beschreibung für diesen Zustand"""
-    def set_description(desc):
-        if len(desc) <= 128:
-            self.description = desc
 
 
 class Category(db.Model):
@@ -269,25 +249,23 @@ class Category(db.Model):
 
     inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categories')
 
-    """Definiere die Beschreibung für diesen Zustand"""
-    def set_description(desc):
-        if len(desc) <= 128:
-            self.description = desc
-
 
 class Rank(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128))
-    # Berechtigungen gerne einfügen
-    example = db.Column(db.Boolean)
+
+    delete_organisation = db.Column(db.Boolean)
+    grant_ranks = db.Column(db.Boolean)
+    add_users = db.Column(db.Boolean)
+    edit_organisation = db.Column(db.Boolean)
+    lend_objects = db.Column(db.Boolean)
 
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     organisation = db.relationship('Organisation', back_populates='ranks')
 
     user = db.relationship('User_in_Organisation', back_populates='rank')
 
-    """Definiere die Beschreibung für diesen Rang"""
-    def set_description(desc):
-        if len(desc) <= 128:
-            self.description = desc
+    @staticmethod
+    def make_admin_rank(name):
+        return Rank(name=name, delete_organisation=True, grant_ranks=True, add_users=True, edit_organisation=True, lend_objects=True)

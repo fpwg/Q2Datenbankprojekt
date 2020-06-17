@@ -1,9 +1,9 @@
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, abort
 from app import app, db
 
 from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm
 
-from app.models import User, Organisation
+from app.models import User, Organisation, Rank
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
@@ -60,6 +60,8 @@ def register_organisation():
     form = OrganisationCreationForm()
     if form.validate_on_submit():
         organisation = Organisation(name=form.name.data)
+        admin_rank = Rank.make_admin_rank("admin")
+        organisation.ranks.append(admin_rank)
         organisation.add_user(current_user)
         db.session.add(organisation)
         db.session.commit()
@@ -76,8 +78,20 @@ def organisations():
 @app.route('/organisations/<name>')
 def organisation(name):
     organisation = Organisation.query.filter_by(name=name).first_or_404()
+    objects = organisation.inventoryobjects
 
-    return render_template('organisation.html', organisation=organisation)
+    return render_template('organisation.html', organisation=organisation, objects=objects)
+
+
+@login_required
+@app.route('/organisations/<name>/ranks')
+def organisation_ranks(name):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    rank = organisation.get_rank(current_user)
+    if not rank or not rank.grant_ranks or not rank.edit_organisation:
+        abort(404)
+    ranks = organisation.ranks
+    return render_template('organisation_ranks.html', ranks=ranks, organisation=organisation)
 
 
 @login_required
