@@ -3,7 +3,7 @@ from app import app, db
 
 from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm
 
-from app.models import User, Organisation, Rank
+from app.models import User, Organisation, Rank, InventoryObject
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
@@ -92,6 +92,14 @@ def organisation_ranks(name):
         abort(404)
     ranks = organisation.ranks
     return render_template('organisation_ranks.html', ranks=ranks, organisation=organisation)
+
+@app.route('/organisations/<org_name>/objects/<inv_id>')
+def inventoryobject(org_name, inv_id):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    inventoryobject = InventoryObject.query.get(inv_id)
+
+    return render_template('inventoryobject.html', inventoryobject=inventoryobject, organisation = organisation)
+
 
 
 @login_required

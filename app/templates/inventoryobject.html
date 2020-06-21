@@ -2,11 +2,38 @@
 
 {% block content %}
   <h1>
-    {{inventoryobject.article}}
+    Object {{inventoryobject.article}}
   </h1>
   <p>
-    Organisation: {{ organisation}}
+    Organisation: <a href="{{ url_for('organisation', name=organisation.name) }}">{{ organisation.name }}</a>
   </p>
+
+  <h2>
+    Description
+  </h2>
+  <p>
+    {{ inventoryobject.description }}
+  </p>
+
+  <h2>
+    Information
+  </h2>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>Room</td>
+      <td>Status</td>
+      <td>Categories</td>
+    </tr>
+      <td>{{inventoryobject.room.name}}</td>
+      <td>{{inventoryobject.status.name}}</td>
+      <td>
+        {% for category in inventoryobject.categories %}
+        {{category.name}} <br>
+        {% endfor %}
+      </td>
+    <tr>
+    </tr>
+  </table>
 
 
 {% endblock %}

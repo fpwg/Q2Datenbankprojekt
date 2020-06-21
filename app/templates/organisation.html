@@ -27,7 +27,7 @@
     </tr>
     {% for object in objects %}
     <tr>
-        <td>{{ object.article }}</td>
+        <td><a href="{{ url_for('inventoryobject', org_name=organisation.name, inv_id=object.id) }}">{{ object.article }}</a></td>
         <td>{{ object.description }}</td>
         <td>{{ object.status.name }}</td>
         <td>{% for cat in object.categories %} {{ cat.name }} {% endfor %}</td>
