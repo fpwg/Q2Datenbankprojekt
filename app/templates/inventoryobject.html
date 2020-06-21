@@ -23,6 +23,7 @@
       <td>Room</td>
       <td>Status</td>
       <td>Categories</td>
+      <td>Currently Lend</td>
     </tr>
       <td>{{inventoryobject.room.name}}</td>
       <td>{{inventoryobject.status.name}}</td>
@@ -31,8 +32,23 @@
         {{category.name}} <br>
         {% endfor %}
       </td>
-    <tr>
+      <td>{{inventoryobject.currently_lend()}}
+  </table>
+
+  <h2>
+    Lending History
+  </h2>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>User</td>
+      <td>Start Timestamp</td>
+      <td>End Timestamp</td>
     </tr>
+    {% for lend in lending_history %}
+      <td><a href="{{ url_for('user', username=lend.user.username) }}">{{ lend.user.username }}</a></td>
+      <td>{{ lend.start_timestamp }}</td>
+      <td>{{ lend.end_timestamp }}</td>
+    {% endfor %}
   </table>
 
 

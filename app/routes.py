@@ -3,7 +3,7 @@ from app import app, db
 
 from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm
 
-from app.models import User, Organisation, Rank, InventoryObject
+from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
@@ -98,7 +98,9 @@ def inventoryobject(org_name, inv_id):
     organisation = Organisation.query.filter_by(name=org_name).first_or_404()
     inventoryobject = InventoryObject.query.get(inv_id)
 
-    return render_template('inventoryobject.html', inventoryobject=inventoryobject, organisation = organisation)
+    lending_history = Lend_Objects.query.filter_by(inventory_object_id=inventoryobject.id)
+
+    return render_template('inventoryobject.html', inventoryobject=inventoryobject, organisation = organisation, lending_history=lending_history)
 
 
 
