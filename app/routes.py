@@ -65,6 +65,8 @@ def register_organisation():
         organisation.add_user(current_user)
         db.session.add(organisation)
         db.session.commit()
+        organisation.set_rank(current_user, admin_rank)
+        db.session.commit()
         return redirect(organisation.page())
     return render_template('create_organisation.html', title='Create Organisation', form=OrganisationCreationForm())
 
