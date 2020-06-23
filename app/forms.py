@@ -31,7 +31,7 @@ class RegistrationForm(FlaskForm):
 
 class OrganisationCreationForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(min=3, max=100)])
-    submit = SubmitField('Sign In')
+    submit = SubmitField('Create')
 
     def validate_name(self, name):
         organisation = Organisation.query.filter_by(name=name.data).first()
@@ -41,6 +41,7 @@ class OrganisationCreationForm(FlaskForm):
 class UserSettingsForm(FlaskForm):
     change_username = StringField('New Username')
     change_email = StringField('New Email')
+    change_bio = StringField('Write about yourself')
     change_password = PasswordField('Confirm New Password')
     change_password_confirm = PasswordField('Confirm New Password', validators=[EqualTo('change_password')])
     confirmation = PasswordField('Confirm with old password', validators=[DataRequired()])
@@ -55,3 +56,14 @@ class UserSettingsForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('A user with this email is already registered.')
+
+class ChangeRankForm(FlaskForm):
+    rank_name = StringField()
+    delete_organisation = BooleanField()
+    grant_ranks = BooleanField()
+    add_users = BooleanField()
+    edit_organisation = BooleanField()
+    lend_objects = BooleanField()
+
+    submit = SubmitField("save")
+

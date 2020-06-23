@@ -81,7 +81,7 @@ class User(UserMixin, db.Model):
         if len(bio) <= 256:
             self.bio = bio
 
-
+            
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
@@ -101,7 +101,7 @@ class Organisation(db.Model):
 
     def page(self):
         """Definiere die Beschreibung für diesen Nutzer"""
-        return url_for('organisation', organisation=self.name)
+        return url_for('organisation', name=self.name)
 
     def user_count(self):
         """Anzahl registrierter Nutzer"""
@@ -278,7 +278,7 @@ class Status(db.Model):
         """Definiere die Beschreibung für diesen Zustand"""
         if len(desc) <= 128:
             self.description = desc
-
+            
 
 class Category(db.Model):
     """Tabelle mit allen Kategorien
@@ -310,15 +310,25 @@ class Rank(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128))
-    # Berechtigungen gerne einfügen
-    example = db.Column(db.Boolean)
+
+    delete_organisation = db.Column(db.Boolean)
+    grant_ranks = db.Column(db.Boolean)
+    add_users = db.Column(db.Boolean)
+    edit_organisation = db.Column(db.Boolean)
+    lend_objects = db.Column(db.Boolean)
 
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
     organisation = db.relationship('Organisation', back_populates='ranks')
 
     user = db.relationship('User_in_Organisation', back_populates='rank')
 
+
     def set_description(desc):
         """Definiere die Beschreibung für diesen Rang"""
         if len(desc) <= 128:
             self.description = desc
+
+    @staticmethod
+    def make_admin_rank(name):
+        return Rank(name=name, delete_organisation=True, grant_ranks=True, add_users=True, edit_organisation=True, lend_objects=True)
+

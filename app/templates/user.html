@@ -1,15 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>
+<h1>
     {{user.username}}'s Profile
-  </h1>
-  <p>
+</h1>
+{% if user.bio %}
+<blockquote>"{{ user.bio }}"</blockquote>
+{% endif %}
+<p>
     E-Mail: <a href="mailto:{{user.email}}">{{user.email}}</a>
-  </p>
+</p>
 
-  {% if user == current_user %}
-  <p><a href="{{ url_for('usersettings') }}">Edit your profile</a></p>
-  {% endif %}
+
+{% if organisations %}
+<h2>Mitglied in</h2>
+<table>
+    <tr style="font-weight: bold;">
+        <td>Name</td>
+        <td>Nutzeranzahl</td>
+    </tr>
+    {% for organisation_rel in organisations %}
+    <tr>
+        <td><a href="{{ url_for('organisation', name=organisation_rel.organisation.name) }}">{{
+            organisation_rel.organisation.name }}</a></td>
+        <td>{{ organisation_rel.organisation.user_count() }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% if user == current_user %}
+<p><a href="{{ url_for('usersettings') }}">Edit your profile</a></p>
+{% endif %}
 
 {% endblock %}
