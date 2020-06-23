@@ -9,6 +9,7 @@ from werkzeug.urls import url_parse
 
 from email_validator import validate_email, EmailNotValidError
 
+
 @app.route('/')
 @app.route('/index')
 @login_required
@@ -95,6 +96,7 @@ def organisation_ranks(name):
     ranks = organisation.ranks
     return render_template('organisation_ranks.html', ranks=ranks, organisation=organisation)
 
+
 @app.route('/organisations/<org_name>/objects/<inv_id>')
 def inventoryobject(org_name, inv_id):
     organisation = Organisation.query.filter_by(name=org_name).first_or_404()
@@ -103,7 +105,6 @@ def inventoryobject(org_name, inv_id):
     lending_history = Lend_Objects.query.filter_by(inventory_object_id=inventoryobject.id)
 
     return render_template('inventoryobject.html', inventoryobject=inventoryobject, organisation = organisation, lending_history=lending_history)
-
 
 
 @login_required

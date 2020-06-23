@@ -9,11 +9,13 @@
     <tr style="font-weight: bold;">
       <td>Name</td>
       <td>Email</td>
+      <td>Rank</td>
     </tr>
     {% for user_rel in organisation.user %}
     <tr>
         <td><a href="{{ url_for('user', username=user_rel.user.username) }}">{{ user_rel.user.username }}</a></td>
         <td><a href="mailto:{{user_rel.user.email}}">{{user_rel.user.email}}</a></td>
+        <td>{{ user_rel.rank.name }}</td>
     </tr>
     {% endfor %}
   </table>
@@ -41,6 +43,20 @@
         </td>
     </tr>
     {% endfor %}
+  </table>
+
+  <h2>Categories</h2>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>Name</td>
+      <td>Description</td>
+    </tr>
+    <tr>
+      {% for cat in organisation.categories %}
+      <td>{{ cat.name }}</td>
+      <td>{{ cat.description }}</td>
+      {% endfor %}
+    </tr>
   </table>
 
 
