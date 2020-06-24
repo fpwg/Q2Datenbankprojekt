@@ -1,0 +1,24 @@
+<table>
+  <tr style="font-weight: bold;">
+    <td>Name</td>
+    <td>Beschreibung</td>
+    <td>Zustand</td>
+    <td>Kategorien</td>
+    <td>Currently Lent To</td>
+  </tr>
+  {% for object in objects %}
+  <tr>
+      <td><a href="{{ url_for('inventoryobject', org_name=organisation.name, inv_id=object.id) }}">{{ object.article }}</a></td>
+      <td>{{ object.description }}</td>
+      <td>{{ object.status.name }}</td>
+      <td>{% for cat in object.categories %} <a href="{{ url_for('category', org_name=organisation.name, cat_name=cat.name) }}"> {{ cat.name }} </a> {% endfor %}</td>
+      <td>
+        {% if object.currently_lend %}
+          <a href="{{ url_for('user', username=object.currently_lend_to().username) }}">{{ object.currently_lend_to().username }}</a>
+        {% else %}
+          Currently not lent
+        {% endif %}
+      </td>
+  </tr>
+  {% endfor %}
+</table>

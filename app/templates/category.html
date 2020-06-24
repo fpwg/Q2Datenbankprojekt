@@ -18,30 +18,9 @@
   <h2>
     Objects
   </h2>
-  <table>
-    <tr style="font-weight: bold;">
-      <td>Name</td>
-      <td>Beschreibung</td>
-      <td>Zustand</td>
-      <td>Kategorien</td>
-      <td>Currently Lent To</td>
-    </tr>
-    {% for object in category.inventoryobjects %}
-    <tr>
-        <td><a href="{{ url_for('inventoryobject', org_name=organisation.name, inv_id=object.id) }}">{{ object.article }}</a></td>
-        <td>{{ object.description }}</td>
-        <td>{{ object.status.name }}</td>
-        <td>{% for cat in object.categories %} {{ cat.name }} {% endfor %}</td>
-        <td>
-          {% if object.currently_lend %}
-            <a href="{{ url_for('user', username=object.currently_lend_to().username) }}">{{ object.currently_lend_to().username }}</a>
-          {% else %}
-            Currently not lent
-          {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-  </table>
+
+  {% set objects = category.inventoryobjects %}
+  {% include "object_table.html" %}
 
 
 {% endblock %}
