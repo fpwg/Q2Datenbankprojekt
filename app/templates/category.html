@@ -2,24 +2,22 @@
 
 {% block content %}
   <h1>
-    Organisation {{organisation.name}}
+    Category {{category.name}}
   </h1>
-  <h2>Nutzer</h2>
-  <table>
-    <tr style="font-weight: bold;">
-      <td>Name</td>
-      <td>Email</td>
-      <td>Rank</td>
-    </tr>
-    {% for user_rel in organisation.user %}
-    <tr>
-        <td><a href="{{ url_for('user', username=user_rel.user.username) }}">{{ user_rel.user.username }}</a></td>
-        <td><a href="mailto:{{user_rel.user.email}}">{{user_rel.user.email}}</a></td>
-        <td>{{ user_rel.rank.name }}</td>
-    </tr>
-    {% endfor %}
-  </table>
-  <h2>Objekte</h2>
+  <p>
+    Organisation: <a href="{{ url_for('organisation', name=organisation.name) }}">{{ organisation.name }}</a>
+  </p>
+
+  <h2>
+    Description
+  </h2>
+  <p>
+    {{ category.description }}
+  </p>
+
+  <h2>
+    Objects
+  </h2>
   <table>
     <tr style="font-weight: bold;">
       <td>Name</td>
@@ -28,7 +26,7 @@
       <td>Kategorien</td>
       <td>Currently Lent To</td>
     </tr>
-    {% for object in objects %}
+    {% for object in category.inventoryobjects %}
     <tr>
         <td><a href="{{ url_for('inventoryobject', org_name=organisation.name, inv_id=object.id) }}">{{ object.article }}</a></td>
         <td>{{ object.description }}</td>
@@ -41,20 +39,6 @@
             Currently not lent
           {% endif %}
         </td>
-    </tr>
-    {% endfor %}
-  </table>
-
-  <h2>Categories</h2>
-  <table>
-    <tr style="font-weight: bold;">
-      <td>Name</td>
-      <td>Description</td>
-    </tr>
-    {% for cat in organisation.categories %}
-    <tr>
-      <td>{{ cat.name }}</td>
-      <td>{{ cat.description }}</td>
     </tr>
     {% endfor %}
   </table>
