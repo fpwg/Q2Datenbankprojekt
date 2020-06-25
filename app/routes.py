@@ -115,6 +115,13 @@ def category(org_name, cat_name):
     return render_template('category.html', category=category, organisation=organisation)
 
 
+@app.route('/rooms')
+def room_list():
+    rooms = Room.query.all()
+
+    return render_template('room_list.html', rooms=rooms)
+
+
 @app.route('/rooms/<name>')
 def room(name):
     room = Room.query.filter_by(name=name).first_or_404()
