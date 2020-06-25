@@ -1,15 +1,4 @@
-# Q2Datenbankprojekt
+# Datenbankprojekt der Q2
 
-## Vorraussetzungen zum Einlesen von Dateien in Datenbank:
-
-- CSV Datei
-- Delimiter: ;
-- Oben Zeile mit Benennung, was jede Spalte macht
-  - **Name/Bezeichnung:**  artikel, article
-  - **Ort/Raum:** room, raum, ort
-  - **Zustand/Funktion:** status, zustand, funktion
-  - **Kategorie:** category, kategorie
-  - **Anzahl:** anzahl, count
-  - **Bemerkung/Beschreibung:** bemerkung, beschreibung, description
-- Möglich: Überkategorien
-  - In erste Spalte schreiben, die anderen Spalten der Zeile leer lassen
+Ziel ist die Erstellung einer Web-App, welche innerschulischen Organisationen, wie AGs Inventur und Verleih ermöglicht.
+Es können Organisationen mit Mitgliedern und Rängen/Berechtigungen erstellt und verwaltet werden. Sie verwalten jeweils ihren eigenen Inventarbestand und können den Verleih von Inventargegenständen über die Web-App realisieren.
