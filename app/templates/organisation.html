@@ -30,7 +30,7 @@
     </tr>
     {% for cat in organisation.categories %}
     <tr>
-      <td>{{ cat.name }}</td>
+      <td><a href="{{ url_for('category', org_name=organisation.name, cat_name=cat.name) }}"> {{ cat.name }} </a></td>
       <td>{{ cat.description }}</td>
     </tr>
     {% endfor %}

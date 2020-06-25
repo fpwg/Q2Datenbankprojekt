@@ -4,14 +4,16 @@
     <td>Beschreibung</td>
     <td>Zustand</td>
     <td>Kategorien</td>
+    <td>Room</td>
     <td>Currently Lent To</td>
   </tr>
   {% for object in objects %}
   <tr>
-      <td><a href="{{ url_for('inventoryobject', org_name=organisation.name, inv_id=object.id) }}">{{ object.article }}</a></td>
+      <td><a href="{{ url_for('inventoryobject', org_name=object.organisation.name, inv_id=object.id) }}">{{ object.article }}</a></td>
       <td>{{ object.description }}</td>
       <td>{{ object.status.name }}</td>
-      <td>{% for cat in object.categories %} <a href="{{ url_for('category', org_name=organisation.name, cat_name=cat.name) }}"> {{ cat.name }} </a> {% endfor %}</td>
+      <td>{% for cat in object.categories %} <a href="{{ url_for('category', org_name=cat.organisation.name, cat_name=cat.name) }}"> {{ cat.name }} </a> <br> {% endfor %}</td>
+      <td><a href="{{ url_for('room', name=object.room.name) }}">{{ object.room.name }}</a></td>
       <td>
         {% if object.currently_lend %}
           <a href="{{ url_for('user', username=object.currently_lend_to().username) }}">{{ object.currently_lend_to().username }}</a>

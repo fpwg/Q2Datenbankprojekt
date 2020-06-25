@@ -3,7 +3,7 @@ from app import app, db
 
 from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm
 
-from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects, Category
+from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects, Category, Room
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
@@ -113,6 +113,13 @@ def category(org_name, cat_name):
     category = Category.query.filter_by(name=cat_name).first_or_404()
 
     return render_template('category.html', category=category, organisation=organisation)
+
+
+@app.route('/rooms/<name>')
+def room(name):
+    room = Room.query.filter_by(name=name).first_or_404()
+
+    return render_template('room.html', room=room)
 
 
 @login_required
