@@ -18,22 +18,9 @@
   <h2>
     Information
   </h2>
-  <table>
-    <tr style="font-weight: bold;">
-      <td>Room</td>
-      <td>Status</td>
-      <td>Categories</td>
-      <td>Currently Lend</td>
-    </tr>
-      <td>{{inventoryobject.room.name}}</td>
-      <td>{{inventoryobject.status.name}}</td>
-      <td>
-        {% for category in inventoryobject.categories %}
-        {{category.name}} <br>
-        {% endfor %}
-      </td>
-      <td>{{inventoryobject.currently_lend()}}
-  </table>
+
+  {% set objects = [inventoryobject] %}
+  {% include "object_table.html" %}
 
   <h2>
     Lending History
