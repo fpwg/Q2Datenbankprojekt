@@ -8,11 +8,13 @@
 <table>
   <tr style="font-weight: bold;">
     <td>Room</td>
+    <td>Description</td>
     <td>Count of Objects</td>
   </tr>
   {% for room in rooms %}
   <tr>
     <td><a href="{{ url_for('room', name=room.name) }}">{{ room.name }}</a></td>
+    <td>{{ room.description }}</td>
     <td>{{ room.inventoryobjects|length }}</td>
   </tr>
   {% endfor %}
