@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>
+    Category {{category.name}}
+  </h1>
+  <p>
+    Organisation: <a href="{{ url_for('organisation', name=organisation.name) }}">{{ organisation.name }}</a>
+  </p>
+
+  <h2>
+    Description
+  </h2>
+  <p>
+    {{ category.description }}
+  </p>
+
+  <h2>
+    Objects
+  </h2>
+
+  {% set objects = category.inventoryobjects %}
+  {% include "object_table.html" %}
+
+
+{% endblock %}

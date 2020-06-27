@@ -81,7 +81,7 @@ class User(UserMixin, db.Model):
         if len(bio) <= 256:
             self.bio = bio
 
-            
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
@@ -148,20 +148,26 @@ class Organisation(db.Model):
         # success
         object.lend_to[0].end_timestamp=datetime.utcnow()
 
-    def add_category(self, name):
+    def add_category(self, name, description):
         """Füge eine Kategorie hinzu"""
         if not any(x.name == name for x in self.categories):
-            self.categories.append(Category(name=name))
+            if description:
+                self.categories.append(Category(name=name, description=description))
+            else:
+                self.categories.append(Category(name=name))
 
     def remove_category(self, category):
         """Entferne eine Kategorie (sie wird dabei gelöscht)"""
         if category.organisation_id == self.id:
             db.session.delete(category)
 
-    def add_rank(self, name):
+    def add_rank(self, name, description):
         """Füge einen Rang hinzu"""
         if not any(x.name == name for x in self.ranks):
-            self.ranks.append(Rank(name=name))
+            if description:
+                self.ranks.append(Rank(name=name, description=description))
+            else:
+                self.ranks.append(Rank(name=name))
 
     def remove_rank(self, rank):
         """Entferne einen Rang (er wird dabei gelöscht)"""
@@ -171,7 +177,10 @@ class Organisation(db.Model):
     def add_status(self, name):
         """Füge einen Zustand hinzu"""
         if not any(x.name == name for x in self.statuses):
-            self.statuses.append(Status(name=name))
+            if description:
+                self.statuses.append(Status(name=name, description=description))
+            else:
+                self.statuses.append(Status(name=name))
 
     def remove_status(self, status):
         """Entferne einen Zustand (er wird dabei gelöscht)"""
@@ -253,7 +262,7 @@ class Room(db.Model):
 
     inventoryobjects = db.relationship('InventoryObject', back_populates='room')
 
-    def set_description(desc):
+    def set_description(self, desc):
         """Definiere die Beschreibung für diesen Raum"""
         if len(desc) <= 128:
             self.description = desc
@@ -274,11 +283,11 @@ class Status(db.Model):
 
     inventoryobjects = db.relationship('InventoryObject', back_populates='status')
 
-    def set_description(desc):
+    def set_description(self, desc):
         """Definiere die Beschreibung für diesen Zustand"""
         if len(desc) <= 128:
             self.description = desc
-            
+
 
 class Category(db.Model):
     """Tabelle mit allen Kategorien
@@ -295,7 +304,7 @@ class Category(db.Model):
 
     inventoryobjects = db.relationship('InventoryObject', secondary=category_inventoryobject, back_populates='categories')
 
-    def set_description(desc):
+    def set_description(self, desc):
         """Definiere die Beschreibung für diesen Zustand"""
         if len(desc) <= 128:
             self.description = desc
@@ -306,7 +315,7 @@ class Rank(db.Model):
 
     Muss immer einer Organisation zugeordnet sein
     """
-    
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(128))
@@ -323,7 +332,7 @@ class Rank(db.Model):
     user = db.relationship('User_in_Organisation', back_populates='rank')
 
 
-    def set_description(desc):
+    def set_description(self, desc):
         """Definiere die Beschreibung für diesen Rang"""
         if len(desc) <= 128:
             self.description = desc
@@ -331,4 +340,3 @@ class Rank(db.Model):
     @staticmethod
     def make_admin_rank(name):
         return Rank(name=name, delete_organisation=True, grant_ranks=True, add_users=True, edit_organisation=True, lend_objects=True)
-

@@ -3,7 +3,7 @@ from app import app, db
 
 from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm
 
-from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects
+from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects, Category, Room, Status
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
@@ -105,6 +105,36 @@ def inventoryobject(org_name, inv_id):
     lending_history = Lend_Objects.query.filter_by(inventory_object_id=inventoryobject.id)
 
     return render_template('inventoryobject.html', inventoryobject=inventoryobject, organisation = organisation, lending_history=lending_history)
+
+
+@app.route('/organisations/<org_name>/categories/<cat_name>')
+def category(org_name, cat_name):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    category = Category.query.filter_by(name=cat_name).first_or_404()
+
+    return render_template('category.html', category=category, organisation=organisation)
+
+
+@app.route('/organisations/<org_name>/statuses/<status_name>')
+def status(org_name, status_name):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    status = Status.query.filter_by(name=status_name).first_or_404()
+
+    return render_template('status.html', status=status, organisation=organisation)
+
+
+@app.route('/rooms')
+def room_list():
+    rooms = Room.query.all()
+
+    return render_template('room_list.html', rooms=rooms)
+
+
+@app.route('/rooms/<name>')
+def room(name):
+    room = Room.query.filter_by(name=name).first_or_404()
+
+    return render_template('room.html', room=room)
 
 
 @login_required
