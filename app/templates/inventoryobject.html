@@ -28,8 +28,8 @@
   <table>
     <tr style="font-weight: bold;">
       <td>User</td>
-      <td>Start Timestamp</td>
-      <td>End Timestamp</td>
+      <td>Start timestamp</td>
+      <td>End timestamp</td>
     </tr>
     {% for lend in lending_history %}
       <td><a href="{{ url_for('user', username=lend.user.username) }}">{{ lend.user.username }}</a></td>
