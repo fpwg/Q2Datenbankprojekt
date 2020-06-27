@@ -2,17 +2,17 @@
 
 {% block content %}
   <h1>
-    Alle Organisationen
+    All Organisations
   </h1>
   {% if not current_user.is_anonymous%}
   <p>
-    Neue Organisation <a href="{{ url_for('register_organisation') }}">erstellen</a>
+    <a href="{{ url_for('register_organisation') }}">Create</a> new organisation
   </p>
   {% endif %}
   <table>
     <tr style="font-weight: bold;">
       <td>Name</td>
-      <td>Nutzeranzahl</td>
+      <td>User Count</td>
     </tr>
     {% for organisation in organisations %}
     <tr>

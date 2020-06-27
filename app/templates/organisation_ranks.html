@@ -8,8 +8,8 @@
   <table>
     <tr style="font-weight: bold;">
       <td>Name</td>
-      <td>Beschreibung</td>
-      <td>Berechtigungen</td>
+      <td>Description</td>
+      <td>Permissions</td>
     </tr>
     {% for rank in organisation.ranks %}
     <tr>
@@ -18,19 +18,19 @@
         <td>
           <ul>
             {% if rank.delete_organisation %}
-            <li>Organisation löschen</li>
+            <li>Delete organisation</li>
             {% endif %}
             {% if rank.grant_ranks %}
-            <li>Ränge verleihen</li>
+            <li>Grant ranks</li>
             {% endif %}
             {% if rank.add_users %}
-            <li>Nutzer einladen</li>
+            <li>Invite new user</li>
             {% endif %}
             {% if rank.edit_organisation %}
-            <li>Organisation verwalten</li>
+            <li>Edit organisation</li>
             {% endif %}
             {% if rank.lend_objects %}
-            <li>Gegenstände verleihen</li>
+            <li>Lend objects</li>
             {% endif %}
           </ul>
         </td>
