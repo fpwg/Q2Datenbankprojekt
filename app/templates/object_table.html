@@ -11,7 +11,7 @@
   <tr>
       <td><a href="{{ url_for('inventoryobject', org_name=object.organisation.name, inv_id=object.id) }}">{{ object.article }}</a></td>
       <td>{{ object.description }}</td>
-      <td>{{ object.status.name }}</td>
+      <td><a href="{{ url_for('status', org_name=object.organisation.name, status_name=object.status.name) }}"> {{ object.status.name }} </a></td>
       <td>{% for cat in object.categories %} <a href="{{ url_for('category', org_name=cat.organisation.name, cat_name=cat.name) }}"> {{ cat.name }} </a> <br> {% endfor %}</td>
       <td><a href="{{ url_for('room', name=object.room.name) }}">{{ object.room.name }}</a></td>
       <td>

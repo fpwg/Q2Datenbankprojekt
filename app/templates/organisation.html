@@ -38,5 +38,21 @@
     {% endfor %}
   </table>
 
+  <h2>Statuses</h2>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>Name</td>
+      <td>Description</td>
+      <td>Count of Objects</td>
+    </tr>
+    {% for status in organisation.statuses %}
+    <tr>
+      <td><a href="{{ url_for('status', org_name=organisation.name, status_name=status.name) }}"> {{ status.name }} </a></td>
+      <td>{{ status.description }}</td>
+      <td>{{ status.inventoryobjects|length }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
 
 {% endblock %}
