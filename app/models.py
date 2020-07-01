@@ -87,7 +87,7 @@ class Organisation(db.Model):
 
     """URL der Profilseite"""
     def page(self):
-        return url_for('organisation', organisation=self.name)
+        return url_for('organisation', name=self.name)
 
     """Anzahl registrierter Nutzer"""
     def user_count(self):

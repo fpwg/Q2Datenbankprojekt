@@ -1,23 +1,46 @@
+{% extends "base.html" %}
+
+
 {% block content %}
-    <h1>Register</h1>
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}
-        </p>
-        <p>
-            {{ form.email.label }}<br>
-            {{ form.email(size=32) }}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}
-        </p>
-        <p>
-            {{ form.confirm.label }}<br>
-            {{ form.confirm(size=32) }}
-        </p>
-        <p>{{ form.submit() }}</p>
-    </form>
+<form action="" method="post" novalidate id="form">{{ form.hidden_tag() }}</form>
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--4-col"></div>
+    <div class="mdl-cell mdl-cell--4-col">
+        <div class="mdl-card mdl-shadow--2dp" style="width:512px;">
+            <div class="mdl-card__title">
+                <h2>Register</h2>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" form="form">
+                    <input class="mdl-textfield__input" type="text" name="username" id="username"
+                           pattern="[A-Za-z0-9]{3,30}" form="form">
+                    <label class="mdl-textfield__label" for="username">Username</label>
+                    <span class="mdl-textfield__error">The username must be at least three characters long and can only contain letters and digits.</span>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="text" id="email" name="email"
+                           pattern="^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$" form="form">
+                    <label class="mdl-textfield__label" for="email">Email address</label>
+                    <span class="mdl-textfield__error">Enter a valid email address</span>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="password" id="password" name="password" form="form">
+                    <label class="mdl-textfield__label" for="password">Password</label>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="password" id="confirm" name="confirm" form="form">
+                    <label class="mdl-textfield__label" for="confirm">Confirm password</label>
+                </div>
+            </div>
+
+            <div class="mdl-card__actions">
+                <button type="submit" id="submit" name="submit"
+                        class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" form="form">
+                    Register
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="mdl-cell mdl-cell--4-col"></div>
+</div>
 {% endblock %}

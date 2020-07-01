@@ -1,18 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Sign In</h1>
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}
-        </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
+<form action="" method="post" novalidate id="form">{{ form.hidden_tag() }}</form>
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--4-col"></div>
+    <div class="mdl-cell mdl-cell--4-col">
+        <div class="mdl-card mdl-shadow--2dp" style="width:512px;">
+            <div class="mdl-card__title">
+                <h2>Sign in</h2>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="text" id="username" name="username" form="form">
+                    <label class="mdl-textfield__label" for="username">Username</label>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="password" id="password" name="password" form="form">
+                    <label class="mdl-textfield__label" for="password">Password</label>
+                </div>
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="remember_me">
+                    <input type="checkbox" id="remember_me" name="remember_me" class="mdl-switch__input" form="form">
+                    <span class="mdl-switch__label">Remember me</span>
+                </label>
+            </div>
+            <div class="mdl-card__actions">
+                <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+                        form="form">
+                    Sign in
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="mdl-cell mdl-cell--4-col"></div>
+</div>
+
 {% endblock %}
