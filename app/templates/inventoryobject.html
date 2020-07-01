@@ -2,11 +2,41 @@
 
 {% block content %}
   <h1>
-    {{inventoryobject.article}}
+    Object {{inventoryobject.article}}
   </h1>
   <p>
-    Organisation: {{ organisation}}
+    Organisation: <a href="{{ url_for('organisation', name=organisation.name) }}">{{ organisation.name }}</a>
   </p>
+
+  <h2>
+    Description
+  </h2>
+  <p>
+    {{ inventoryobject.description }}
+  </p>
+
+  <h2>
+    Information
+  </h2>
+
+  {% set objects = [inventoryobject] %}
+  {% include "object_table.html" %}
+
+  <h2>
+    Lending History
+  </h2>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>User</td>
+      <td>Start timestamp</td>
+      <td>End timestamp</td>
+    </tr>
+    {% for lend in lending_history %}
+      <td><a href="{{ url_for('user', username=lend.user.username) }}">{{ lend.user.username }}</a></td>
+      <td>{{ lend.start_timestamp }}</td>
+      <td>{{ lend.end_timestamp }}</td>
+    {% endfor %}
+  </table>
 
 
 {% endblock %}

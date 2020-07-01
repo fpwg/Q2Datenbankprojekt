@@ -4,16 +4,52 @@
   <h1>
     Organisation {{organisation.name}}
   </h1>
-  <h2>Nutzer</h2>
+  <h2>User</h2>
   <table>
     <tr style="font-weight: bold;">
       <td>Name</td>
       <td>Email</td>
+      <td>Rank</td>
     </tr>
-    {% for user in organisation.user %}
+    {% for user_rel in organisation.user %}
     <tr>
-        <td><a href="{{ url_for('user', username=user.username) }}">{{ user.username }}</a></td>
-        <td><a href="mailto:{{user.email}}">{{user.email}}</a></td>
+        <td><a href="{{ url_for('user', username=user_rel.user.username) }}">{{ user_rel.user.username }}</a></td>
+        <td><a href="mailto:{{user_rel.user.email}}">{{user_rel.user.email}}</a></td>
+        <td>{{ user_rel.rank.name }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <h2>Objects</h2>
+  {% include "object_table.html" %}
+
+  <h2>Categories</h2>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>Name</td>
+      <td>Description</td>
+      <td>Count of objects</td>
+    </tr>
+    {% for cat in organisation.categories %}
+    <tr>
+      <td><a href="{{ url_for('category', org_name=organisation.name, cat_name=cat.name) }}"> {{ cat.name }} </a></td>
+      <td>{{ cat.description }}</td>
+      <td>{{ cat.inventoryobjects|length }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Statuses</h2>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>Name</td>
+      <td>Description</td>
+      <td>Count of objects</td>
+    </tr>
+    {% for status in organisation.statuses %}
+    <tr>
+      <td><a href="{{ url_for('status', org_name=organisation.name, status_name=status.name) }}"> {{ status.name }} </a></td>
+      <td>{{ status.description }}</td>
+      <td>{{ status.inventoryobjects|length }}</td>
     </tr>
     {% endfor %}
   </table>

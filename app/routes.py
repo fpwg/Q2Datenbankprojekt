@@ -1,13 +1,14 @@
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, abort
 from app import app, db
 
 from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm
 
-from app.models import User, Organisation
+from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects, Category, Room, Status
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from email_validator import validate_email, EmailNotValidError
+
 
 @app.route('/')
 @app.route('/index')
@@ -60,8 +61,12 @@ def register_organisation():
     form = OrganisationCreationForm()
     if form.validate_on_submit():
         organisation = Organisation(name=form.name.data)
+        admin_rank = Rank.make_admin_rank("admin")
+        organisation.ranks.append(admin_rank)
         organisation.add_user(current_user)
         db.session.add(organisation)
+        db.session.commit()
+        organisation.set_rank(current_user, admin_rank)
         db.session.commit()
         return redirect(organisation.page())
     return render_template('create_organisation.html', title='Create Organisation', form=OrganisationCreationForm())
@@ -76,7 +81,60 @@ def organisations():
 @app.route('/organisations/<name>')
 def organisation(name):
     organisation = Organisation.query.filter_by(name=name).first_or_404()
-    return render_template('organisation.html', organisation=organisation)
+    objects = organisation.inventoryobjects
+
+    return render_template('organisation.html', organisation=organisation, objects=objects)
+
+
+@login_required
+@app.route('/organisations/<name>/ranks')
+def organisation_ranks(name):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    rank = organisation.get_rank(current_user)
+    if not rank or not rank.grant_ranks or not rank.edit_organisation:
+        abort(404)
+    ranks = organisation.ranks
+    return render_template('organisation_ranks.html', ranks=ranks, organisation=organisation)
+
+
+@app.route('/organisations/<org_name>/objects/<inv_id>')
+def inventoryobject(org_name, inv_id):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    inventoryobject = InventoryObject.query.get(inv_id)
+
+    lending_history = Lend_Objects.query.filter_by(inventory_object_id=inventoryobject.id)
+
+    return render_template('inventoryobject.html', inventoryobject=inventoryobject, organisation = organisation, lending_history=lending_history)
+
+
+@app.route('/organisations/<org_name>/categories/<cat_name>')
+def category(org_name, cat_name):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    category = Category.query.filter_by(name=cat_name).first_or_404()
+
+    return render_template('category.html', category=category, organisation=organisation)
+
+
+@app.route('/organisations/<org_name>/statuses/<status_name>')
+def status(org_name, status_name):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    status = Status.query.filter_by(name=status_name).first_or_404()
+
+    return render_template('status.html', status=status, organisation=organisation)
+
+
+@app.route('/rooms')
+def room_list():
+    rooms = Room.query.all()
+
+    return render_template('room_list.html', rooms=rooms)
+
+
+@app.route('/rooms/<name>')
+def room(name):
+    room = Room.query.filter_by(name=name).first_or_404()
+
+    return render_template('room.html', room=room)
 
 
 @login_required
@@ -87,12 +145,12 @@ def usersettings():
         return redirect(url_for('index'))
     form = UserSettingsForm()
     if form.validate_on_submit():
-        print ('b')
         if not current_user.check_password(form.confirmation.data):
             return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Wrong password, no changes made')
         username = form.change_username.data
         email = form.change_email.data
-        password=form.change_password.data
+        password = form.change_password.data
+        bio = form.change_bio.data
         if email:
             try:
                  valid = validate_email(email)
@@ -107,6 +165,8 @@ def usersettings():
             else:
                 db.session.commit()
                 return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'No valid imput')
+        if bio:
+            current_user.bio=bio
         db.session.commit()
         return render_template('usersettings.html', title='Settings', form=UserSettingsForm(), message = 'Your changes are made!')
     return render_template('usersettings.html', title='Settings', form=UserSettingsForm())
@@ -116,4 +176,5 @@ def usersettings():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    return render_template('user.html', user=user)
+    organisations = user.organisations
+    return render_template('user.html', user=user, organisations=organisations)

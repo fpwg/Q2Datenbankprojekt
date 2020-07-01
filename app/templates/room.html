@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>
+    Room {{room.name}}
+  </h1>
+
+  <h2>
+    Description
+  </h2>
+  <p>
+    {{ room.description }}
+  </p>
+
+  <h2>
+    Objects
+  </h2>
+
+  {% set objects = room.inventoryobjects %}
+  {% include "object_table.html" %}
+
+
+{% endblock %}

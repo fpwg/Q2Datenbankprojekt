@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>
+    Organisation {{organisation.name}}
+  </h1>
+  <h2>Ränge</h2>
+  <table>
+    <tr style="font-weight: bold;">
+      <td>Name</td>
+      <td>Description</td>
+      <td>Permissions</td>
+    </tr>
+    {% for rank in organisation.ranks %}
+    <tr>
+        <td>{{ rank.name }}</td>
+        <td>{% if rank.description %}{{ rank.description }}{% else %} - {% endif %}</td>
+        <td>
+          <ul>
+            {% if rank.delete_organisation %}
+            <li>Delete organisation</li>
+            {% endif %}
+            {% if rank.grant_ranks %}
+            <li>Grant ranks</li>
+            {% endif %}
+            {% if rank.add_users %}
+            <li>Invite new user</li>
+            {% endif %}
+            {% if rank.edit_organisation %}
+            <li>Edit organisation</li>
+            {% endif %}
+            {% if rank.lend_objects %}
+            <li>Lend objects</li>
+            {% endif %}
+          </ul>
+        </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+
+{% endblock %}

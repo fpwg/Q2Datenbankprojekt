@@ -9,6 +9,16 @@
                 <h2>{{user.username}}</h2>
             </div>
             <div class="mdl-card__supporting-text">
+              {% if user.bio %}
+<blockquote>"{{ user.bio }}"</blockquote>
+{% endif %}
+                  {% for organisation_rel in organisations %}
+    <tr>
+        <td><a href="{{ url_for('organisation', name=organisation_rel.organisation.name) }}">{{
+            organisation_rel.organisation.name }}</a></td>
+        <td>{{ organisation_rel.organisation.user_count() }}</td>
+    </tr>
+    {% endfor %}
                 <li class="mdl-list__item">
                     <span class="mdl-list__item-primary-content">
                     <i class="material-icons mdl-list__item-icon">email</i>
@@ -30,5 +40,4 @@
     </div>
     <div class="mdl-cell mdl-cell--4-col"></div>
 </div>
-
 {% endblock %}
