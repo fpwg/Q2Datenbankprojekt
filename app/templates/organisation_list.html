@@ -1,26 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>
-    All Organisations
-  </h1>
-  {% if not current_user.is_anonymous%}
-  <p>
-    <a href="{{ url_for('register_organisation') }}">Create</a> new organisation
-  </p>
-  {% endif %}
-  <table>
-    <tr style="font-weight: bold;">
-      <td>Name</td>
-      <td>User Count</td>
-    </tr>
-    {% for organisation in organisations %}
-    <tr>
-        <td><a href="{{ url_for('organisation', name=organisation.name) }}">{{ organisation.name }}</a></td>
-        <td>{{ organisation.user_count() }}</td>
-    </tr>
-    {% endfor %}
-  </table>
-
-
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--6-col">
+        <h2>
+            All Organisations
+        </h2>
+        <table class="mdl-data-table mdl-js-data-table">
+            <thead>
+                <tr>
+                    <th class="mdl-data-table__cell--non-numeric">Name</th>
+                    <th>Number of members</th>
+                </tr>
+            </thead>
+            {% for organisation in organisations %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric"><a href="{{ url_for('organisation', name=organisation.name) }}">{{ organisation.name }}</a></td>
+                <td>{{ organisation.user_count() }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" href="{{ url_for('register_organisation') }}">
+            Create organisation
+        </a>
+    </div>
+</div>
 {% endblock %}

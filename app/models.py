@@ -100,7 +100,6 @@ class Organisation(db.Model):
     ranks = db.relationship('Rank', back_populates='organisation')
 
     def page(self):
-        """Definiere die Beschreibung für diesen Nutzer"""
         return url_for('organisation', name=self.name)
 
     def user_count(self):
