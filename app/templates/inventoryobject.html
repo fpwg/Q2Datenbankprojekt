@@ -32,9 +32,11 @@
       <td>End timestamp</td>
     </tr>
     {% for lend in lending_history %}
+    <tr>
       <td><a href="{{ url_for('user', username=lend.user.username) }}">{{ lend.user.username }}</a></td>
       <td>{{ lend.start_timestamp }}</td>
       <td>{{ lend.end_timestamp }}</td>
+    </tr>
     {% endfor %}
   </table>
 
