@@ -76,10 +76,18 @@ class User(UserMixin, db.Model):
             if old_organisation.id == i.organisation_id:
                 db.session.delete(i)
 
-    def set_bio(bio):
+    def set_bio(self, bio):
         """Definiere die Beschreibung für diesen Nutzer"""
         if len(bio) <= 256:
             self.bio = bio
+
+    def in_organisation(self, organisation):
+        """Teste, ob User einer bestimmten Organisation angehört"""
+        for org in self.organisations:
+            if org.organisation == organisation:
+                print('True')
+                return True
+        return False
 
 
 @login.user_loader

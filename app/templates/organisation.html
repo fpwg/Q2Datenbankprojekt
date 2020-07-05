@@ -4,6 +4,9 @@
   <h1>
     Organisation {{organisation.name}}
   </h1>
+  {% if current_user.in_organisation(organisation) %}
+  <a href="{{ url_for('leave_organisation', name=organisation.name) }}"> Leave this Organisation </a>
+  {% endif %}
   <h2>User</h2>
   <table>
     <tr style="font-weight: bold;">

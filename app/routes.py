@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request, flash, abort
 from app import app, db
 
-from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm
+from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm, LeaveOrganisationFrom
 
 from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects, Category, Room, Status
 from flask_login import current_user, login_user, logout_user, login_required
@@ -83,7 +83,7 @@ def organisation(name):
     organisation = Organisation.query.filter_by(name=name).first_or_404()
     objects = organisation.inventoryobjects
 
-    return render_template('organisation.html', organisation=organisation, objects=objects)
+    return render_template('organisation.html', organisation=organisation, objects=objects, current_user=current_user)
 
 
 @login_required
@@ -178,3 +178,16 @@ def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     organisations = user.organisations
     return render_template('user.html', user=user, organisations=organisations)
+
+
+@app.route('/organisations/<name>/leave', methods=['GET', 'POST'])
+def leave_organisation(name):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            current_user.leave_organisation(old_organisation=organisation)
+            db.session.commit()
+            return redirect(url_for('organisations'))
+    return render_template('leave_organisation.html', form=form, organisation=organisation)
