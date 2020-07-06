@@ -60,7 +60,7 @@ def register():
 def register_organisation():
     form = OrganisationCreationForm()
     if form.validate_on_submit():
-        organisation = Organisation(name=form.name.data)
+        organisation = Organisation.create_organisation(name=form.name.data)
         admin_rank = Rank.make_admin_rank("admin")
         organisation.ranks.append(admin_rank)
         organisation.add_user(current_user)

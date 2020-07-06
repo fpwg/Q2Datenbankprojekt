@@ -123,6 +123,8 @@ class Organisation(db.Model):
         a = User_in_Organisation()
         a.user = user
         a.organisation = self
+        default_rank=Rank.query.filter_by(name="default", organisation_id=self.id).first()
+        a.rank = default_rank
 
     def remove_user(self, old_user):
         """Entferne einen Nutzer"""
@@ -211,6 +213,13 @@ class Organisation(db.Model):
         """Definiere die Beschreibung für die Organisation"""
         if len(desc) <= 256:
             self.description = desc
+
+
+    @staticmethod
+    def create_organisation(name):
+        organisation = Organisation(name=name)
+        organisation.ranks.append(Rank.make_default_rank())
+        return organisation
 
 
 class InventoryObject(db.Model):
@@ -348,3 +357,7 @@ class Rank(db.Model):
     @staticmethod
     def make_admin_rank(name):
         return Rank(name=name, delete_organisation=True, grant_ranks=True, add_users=True, edit_organisation=True, lend_objects=True)
+
+    @staticmethod
+    def make_default_rank():
+        return Rank(name="default", delete_organisation=False, grant_ranks=False, add_users=False, edit_organisation=False, lend_objects=False)
