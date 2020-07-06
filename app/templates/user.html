@@ -33,4 +33,10 @@
 <p><a href="{{ url_for('usersettings') }}">Edit your profile</a></p>
 {% endif %}
 
+{% for organisation in current_user.organisations %}
+{% if organisation.organisation.get_rank(current_user).add_users and not user.in_organisation(organisation.organisation)%}
+<p><a href="{{ url_for('add_user_organisation', name=organisation.organisation.name, username=user.username)}}">Add user to {{organisation.organisation.name}}</a></p>
+{% endif %}
+{% endfor %}
+
 {% endblock %}

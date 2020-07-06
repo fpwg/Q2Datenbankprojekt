@@ -177,7 +177,7 @@ def usersettings():
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     organisations = user.organisations
-    return render_template('user.html', user=user, organisations=organisations)
+    return render_template('user.html', user=user, organisations=organisations, current_user=current_user)
 
 
 @app.route('/organisations/<name>/leave', methods=['GET', 'POST'])
@@ -224,3 +224,20 @@ def join_organisation(name):
             db.session.commit()
             return redirect(url_for('organisation', name=organisation.name))
     return render_template('join_organisation.html', form=form, organisation=organisation)
+
+
+@app.route('/organisations/<name>/add/<username>', methods=['GET', 'POST'])
+def add_user_organisation(name, username):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    user = User.query.filter_by(username=username).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if not organisation.get_rank(current_user).add_users:
+        abort(404)
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            organisation.add_user(user)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+    return render_template('add_user_organisation.html', form=form, organisation=organisation, user=user)
