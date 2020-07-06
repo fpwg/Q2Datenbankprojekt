@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request, flash, abort
 from app import app, db
 
-from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm
+from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm, LeaveOrganisationFrom
 
 from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects, Category, Room, Status
 from flask_login import current_user, login_user, logout_user, login_required
@@ -83,7 +83,7 @@ def organisation(name):
     organisation = Organisation.query.filter_by(name=name).first_or_404()
     objects = organisation.inventoryobjects
 
-    return render_template('organisation.html', organisation=organisation, objects=objects)
+    return render_template('organisation.html', organisation=organisation, objects=objects, current_user=current_user)
 
 
 @login_required
@@ -177,4 +177,67 @@ def usersettings():
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     organisations = user.organisations
-    return render_template('user.html', user=user, organisations=organisations)
+    return render_template('user.html', user=user, organisations=organisations, current_user=current_user)
+
+
+@app.route('/organisations/<name>/leave', methods=['GET', 'POST'])
+def leave_organisation(name):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            current_user.leave_organisation(old_organisation=organisation)
+            db.session.commit()
+            return redirect(url_for('organisations'))
+    return render_template('leave_organisation.html', form=form, organisation=organisation)
+
+
+@app.route('/organisations/<name>/remove/<username>', methods=['GET', 'POST'])
+def remove_user(name, username):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    user = User.query.filter_by(username=username).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if not organisation.get_rank(current_user).add_users:
+        abort(404)
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            user.leave_organisation(old_organisation=organisation)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+    return render_template('remove_user_organisation.html', form=form, organisation=organisation, user=user)
+
+
+@app.route('/organisations/<name>/join', methods=['GET', 'POST'])
+def join_organisation(name):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if current_user.in_organisation(organisation):
+        abort(404)
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            organisation.add_user(current_user)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+    return render_template('join_organisation.html', form=form, organisation=organisation)
+
+
+@app.route('/organisations/<name>/add/<username>', methods=['GET', 'POST'])
+def add_user_organisation(name, username):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    user = User.query.filter_by(username=username).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if not organisation.get_rank(current_user).add_users:
+        abort(404)
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            organisation.add_user(user)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+    return render_template('add_user_organisation.html', form=form, organisation=organisation, user=user)

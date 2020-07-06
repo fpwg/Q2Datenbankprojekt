@@ -67,3 +67,6 @@ class ChangeRankForm(FlaskForm):
 
     submit = SubmitField("save")
 
+class LeaveOrganisationFrom(FlaskForm):
+    confirm = BooleanField('Confirm')
+    submit = SubmitField('Submit')
