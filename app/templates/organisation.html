@@ -6,7 +6,11 @@
   </h1>
 
   {% if current_user.in_organisation(organisation) %}
-  <a href="{{ url_for('leave_organisation', name=organisation.name) }}"> Leave this Organisation </a>
+  <p><a href="{{ url_for('leave_organisation', name=organisation.name) }}"> Leave this Organisation </a></p>
+  {% endif %}
+
+  {% if not current_user.in_organisation(organisation) %}
+  <p><a href="{{ url_for('join_organisation', name=organisation.name) }}"> Join this Organisation </a></p>
   {% endif %}
 
   <h2>User</h2>

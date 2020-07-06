@@ -208,3 +208,19 @@ def remove_user(name, username):
             db.session.commit()
             return redirect(url_for('organisation', name=organisation.name))
     return render_template('remove_user_organisation.html', form=form, organisation=organisation, user=user)
+
+
+@app.route('/organisations/<name>/join', methods=['GET', 'POST'])
+def join_organisation(name):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if current_user.in_organisation(organisation):
+        abort(404)
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            organisation.add_user(current_user)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+    return render_template('join_organisation.html', form=form, organisation=organisation)
