@@ -191,3 +191,20 @@ def leave_organisation(name):
             db.session.commit()
             return redirect(url_for('organisations'))
     return render_template('leave_organisation.html', form=form, organisation=organisation)
+
+
+@app.route('/organisations/<name>/remove/<username>', methods=['GET', 'POST'])
+def remove_user(name, username):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    user = User.query.filter_by(username=username).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if not organisation.get_rank(current_user).add_users:
+        abort(404)
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            user.leave_organisation(old_organisation=organisation)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+    return render_template('remove_user_organisation.html', form=form, organisation=organisation, user=user)

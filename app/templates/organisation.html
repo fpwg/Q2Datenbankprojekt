@@ -4,21 +4,29 @@
   <h1>
     Organisation {{organisation.name}}
   </h1>
+
   {% if current_user.in_organisation(organisation) %}
   <a href="{{ url_for('leave_organisation', name=organisation.name) }}"> Leave this Organisation </a>
   {% endif %}
+
   <h2>User</h2>
   <table>
     <tr style="font-weight: bold;">
       <td>Name</td>
       <td>Email</td>
       <td>Rank</td>
+      {% if organisation.get_rank(current_user).add_users %}
+      <td></td>
+      {% endif %}
     </tr>
     {% for user_rel in organisation.user %}
     <tr>
         <td><a href="{{ url_for('user', username=user_rel.user.username) }}">{{ user_rel.user.username }}</a></td>
         <td><a href="mailto:{{user_rel.user.email}}">{{user_rel.user.email}}</a></td>
         <td>{{ user_rel.rank.name }}</td>
+        {% if organisation.get_rank(current_user).add_users %}
+        <td><a href="{{ url_for('remove_user', name=organisation.name, username=user_rel.user.username) }}">Remove User</a></td>
+        {% endif %}
     </tr>
     {% endfor %}
   </table>
