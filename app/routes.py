@@ -127,7 +127,7 @@ def status(org_name, status_name):
 def room_list():
     rooms = Room.query.all()
 
-    return render_template('room_list.html', rooms=rooms)
+    return render_template('room_list.html', rooms=rooms, current_user=current_user)
 
 
 @app.route('/rooms/<name>')
@@ -289,3 +289,23 @@ def add_status(name):
         return redirect(url_for('status', org_name=organisation.name, status_name=status_name))
 
     return render_template('create_status.html', form=form, organisation=organisation)
+
+
+@login_required
+@app.route('/rooms/add', methods=['GET', 'POST'])
+def add_room():
+    form = CreateCategoryForm()
+
+    if form.validate_on_submit():
+        room_name = form.name.data
+        room_description = form.description.data
+        if Room.query.filter_by(name=room_name).first():
+            print('fesiushfui')
+            return render_template('create_room.html', form=form)
+        if len(room_name) > 64 or len(room_description) > 128:
+            return render_template('create_room.html', form=form)
+        db.session.add(Room(name=room_name, description=room_description))
+        db.session.commit()
+        return redirect(url_for('room', name=room_name))
+
+    return render_template('create_room.html', form=form)

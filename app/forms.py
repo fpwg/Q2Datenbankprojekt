@@ -73,7 +73,7 @@ class LeaveOrganisationFrom(FlaskForm):
     submit = SubmitField('Submit')
 
 class CreateCategoryForm(FlaskForm):
-    # Also used for create status
+    # Also used for create status and room
     name = StringField()
     description = StringField()
 
