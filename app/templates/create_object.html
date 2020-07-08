@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Create Object</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name() }}
+        </p>
+        <p>
+            {{ form.description.label }}<br>
+            {{ form.description() }}
+        </p>
+        <p>
+            {{ form.categories.label }}<br>
+            {{ form.categories() }}
+        </p>
+        <p>
+            {{ form.status.label }}<br>
+            {{ form.status() }}
+        </p>
+        <p>
+            {{ form.room.label }}<br>
+            {{ form.room() }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

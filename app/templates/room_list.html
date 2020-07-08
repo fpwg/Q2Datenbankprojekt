@@ -4,18 +4,26 @@
 <h1>
   Room List
 </h1>
-
+{% if current_user.is_authenticated %}
+<p><a href="{{url_for('add_room')}}">Create Room</a></p>
+{% endif %}
 <table>
   <tr style="font-weight: bold;">
     <td>Room</td>
     <td>Description</td>
     <td>Count of Objects</td>
+    {% if current_user.is_authenticated %}
+    <td></td>
+    {% endif %}
   </tr>
   {% for room in rooms %}
   <tr>
     <td><a href="{{ url_for('room', name=room.name) }}">{{ room.name }}</a></td>
     <td>{{ room.description }}</td>
     <td>{{ room.inventoryobjects|length }}</td>
+    {% if current_user.is_authenticated %}
+    <td><a href="{{url_for('delete_room', room_name=room.name)}}">delete {{ room.name }}</a></td>
+    {% endif %}
   </tr>
   {% endfor %}
 </table>

@@ -59,6 +59,7 @@ class UserSettingsForm(FlaskForm):
 
 class ChangeRankForm(FlaskForm):
     rank_name = StringField()
+    rank_description = StringField()
     delete_organisation = BooleanField()
     grant_ranks = BooleanField()
     add_users = BooleanField()
@@ -68,5 +69,22 @@ class ChangeRankForm(FlaskForm):
     submit = SubmitField("save")
 
 class LeaveOrganisationFrom(FlaskForm):
+    # Also used for join organisation, remove and add user to organisation
     confirm = BooleanField('Confirm')
     submit = SubmitField('Submit')
+
+class CreateCategoryForm(FlaskForm):
+    # Also used for create status and room
+    name = StringField()
+    description = StringField()
+
+    submit = SubmitField('Create')
+
+class CreateObjectForm(FlaskForm):
+    name = StringField()
+    description = StringField()
+    categories = StringField()
+    status = StringField()
+    room = StringField()
+
+    submit = SubmitField('Create')

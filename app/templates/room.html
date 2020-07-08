@@ -12,6 +12,10 @@
     {{ room.description }}
   </p>
 
+  {% if current_user.is_authenticated %}
+  <p><a href="{{ url_for('delete_room', room_name=room.name) }}"> Delete this room </a></p>
+  {% endif %}
+
   <h2>
     Objects
   </h2>

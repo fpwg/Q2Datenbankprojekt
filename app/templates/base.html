@@ -11,6 +11,7 @@
           Inventur:
           <a href="{{ url_for('index') }}">Home</a>
           <a href="{{ url_for('organisations') }}">Organisations</a>
+          <a href="{{ url_for('room_list') }}">Rooms</a>
           {% if current_user.is_anonymous%}
           <a href="{{ url_for('login') }}">Login</a>
           <a href="{{ url_for('register') }}">Register</a>
