@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request, flash, abort
 from app import app, db
 
-from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm, LeaveOrganisationFrom
+from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm, LeaveOrganisationFrom, CreateCategoryForm
 
 from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects, Category, Room, Status
 from flask_login import current_user, login_user, logout_user, login_required
@@ -241,3 +241,27 @@ def add_user_organisation(name, username):
             db.session.commit()
             return redirect(url_for('organisation', name=organisation.name))
     return render_template('add_user_organisation.html', form=form, organisation=organisation, user=user)
+
+
+@app.route('/organisations/<name>/categories/add', methods=['GET', 'POST'])
+def add_category(name):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    form = CreateCategoryForm()
+
+    if not current_user.in_organisation(organisation):
+        abort(404)
+
+    if form.validate_on_submit():
+        category_name = form.name.data
+        category_description = form.description.data
+        categories = Category.query.filter_by(name=category_name)
+        for cat in categories:
+            if cat.organisation == organisation:
+                return render_template('create_category.html', form=form, organisation=organisation)
+        if len(category_name) > 64 or len(category_description) > 128:
+            return render_template('create_category.html', form=form, organisation=organisation)
+        organisation.add_category(category_name, category_description)
+        db.session.commit()
+        return redirect(url_for('category', org_name=organisation.name, cat_name=category_name))
+
+    return render_template('create_category.html', form=form, organisation=organisation)

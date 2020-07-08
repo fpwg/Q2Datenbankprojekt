@@ -38,6 +38,9 @@
   {% include "object_table.html" %}
 
   <h2>Categories</h2>
+  {% if current_user.in_organisation(organisation) %}
+  <p><a href="{{url_for('add_category', name=organisation.name)}}">Create Category</a></p>
+  {% endif %}
   <table>
     <tr style="font-weight: bold;">
       <td>Name</td>

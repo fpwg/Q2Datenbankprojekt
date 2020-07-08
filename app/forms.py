@@ -68,5 +68,13 @@ class ChangeRankForm(FlaskForm):
     submit = SubmitField("save")
 
 class LeaveOrganisationFrom(FlaskForm):
+    # Also used for join organisation, remove and add user to organisation
     confirm = BooleanField('Confirm')
     submit = SubmitField('Submit')
+
+class CreateCategoryForm(FlaskForm):
+    # Also used for create status
+    name = StringField()
+    description = StringField()
+
+    submit = SubmitField('Create')
