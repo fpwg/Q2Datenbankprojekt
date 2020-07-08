@@ -57,6 +57,9 @@
   </table>
 
   <h2>Statuses</h2>
+  {% if current_user.in_organisation(organisation) %}
+  <p><a href="{{url_for('add_status', name=organisation.name)}}">Create Status</a></p>
+  {% endif %}
   <table>
     <tr style="font-weight: bold;">
       <td>Name</td>

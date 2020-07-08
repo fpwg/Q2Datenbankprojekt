@@ -265,3 +265,27 @@ def add_category(name):
         return redirect(url_for('category', org_name=organisation.name, cat_name=category_name))
 
     return render_template('create_category.html', form=form, organisation=organisation)
+
+
+@app.route('/organisations/<name>/statuses/add', methods=['GET', 'POST'])
+def add_status(name):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    form = CreateCategoryForm()
+
+    if not current_user.in_organisation(organisation):
+        abort(404)
+
+    if form.validate_on_submit():
+        status_name = form.name.data
+        status_description = form.description.data
+        statuses = Status.query.filter_by(name=status_name)
+        for stat in statuses:
+            if stat.organisation == organisation:
+                return render_template('create_status.html', form=form, organisation=organisation)
+        if len(status_name) > 64 or len(status_description) > 128:
+            return render_template('create_status.html', form=form, organisation=organisation)
+        organisation.add_status(status_name, status_description)
+        db.session.commit()
+        return redirect(url_for('status', org_name=organisation.name, status_name=status_name))
+
+    return render_template('create_status.html', form=form, organisation=organisation)

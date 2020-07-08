@@ -184,7 +184,7 @@ class Organisation(db.Model):
         if rank.organisation_id == self.id:
             db.session.delete(rank)
 
-    def add_status(self, name):
+    def add_status(self, name, description):
         """Füge einen Zustand hinzu"""
         if not any(x.name == name for x in self.statuses):
             if description:
