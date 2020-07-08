@@ -59,6 +59,7 @@ class UserSettingsForm(FlaskForm):
 
 class ChangeRankForm(FlaskForm):
     rank_name = StringField()
+    rank_description = StringField()
     delete_organisation = BooleanField()
     grant_ranks = BooleanField()
     add_users = BooleanField()

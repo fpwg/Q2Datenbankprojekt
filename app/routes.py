@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request, flash, abort
 from app import app, db
 
-from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm, LeaveOrganisationFrom, CreateCategoryForm
+from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm, LeaveOrganisationFrom, CreateCategoryForm, ChangeRankForm
 
 from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects, Category, Room, Status
 from flask_login import current_user, login_user, logout_user, login_required
@@ -300,7 +300,6 @@ def add_room():
         room_name = form.name.data
         room_description = form.description.data
         if Room.query.filter_by(name=room_name).first():
-            print('fesiushfui')
             return render_template('create_room.html', form=form)
         if len(room_name) > 64 or len(room_description) > 128:
             return render_template('create_room.html', form=form)
@@ -309,3 +308,33 @@ def add_room():
         return redirect(url_for('room', name=room_name))
 
     return render_template('create_room.html', form=form)
+
+
+@app.route('/organisations/<name>/ranks/add', methods=['GET', 'POST'])
+def add_rank(name):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    form = ChangeRankForm()
+
+    if not current_user.in_organisation(organisation) or not organisation.get_rank(current_user).edit_organisation:
+        abort(404)
+
+    if form.validate_on_submit():
+        rank_name = form.rank_name.data
+        rank_description = form.rank_description.data
+        delete_organisation = form.delete_organisation.data
+        grant_ranks = form.grant_ranks.data
+        add_users = form.add_users.data
+        edit_organisation = form.edit_organisation.data
+        lend_objects = form.lend_objects.data
+
+        ranks = Rank.query.filter_by(name=rank_name)
+        for rank in ranks:
+            if rank.organisation == organisation:
+                return render_template('create_rank.html', form=form, organisation=organisation)
+        if len(rank_name) > 64 or len(rank_description) > 128:
+            return render_template('create_rank.html', form=form, organisation=organisation)
+        organisation.ranks.append(Rank(name=rank_name, delete_organisation=delete_organisation, grant_ranks=grant_ranks, add_users=add_users, edit_organisation=edit_organisation, lend_objects=lend_objects))
+        db.session.commit()
+        return redirect(url_for('organisation_ranks', name=organisation.name))
+
+    return render_template('create_rank.html', form=form, organisation=organisation)

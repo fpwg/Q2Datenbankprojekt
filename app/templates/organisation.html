@@ -13,6 +13,10 @@
   <p><a href="{{ url_for('join_organisation', name=organisation.name) }}"> Join this Organisation </a></p>
   {% endif %}
 
+  {% if organisation.get_rank(current_user).grant_ranks %}
+  <p><a href="{{ url_for('organisation_ranks', name=organisation.name) }}"> Ranks </a></p>
+  {% endif %}
+
   <h2>User</h2>
   <table>
     <tr style="font-weight: bold;">
