@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request, flash, abort
 from app import app, db
 
-from app.forms import LoginForm, RegistrationForm, UserSettingsForm, OrganisationCreationForm, LeaveOrganisationFrom, CreateCategoryForm, ChangeRankForm
+from app.forms import LoginForm, RegistrationForm, CreateObjectForm, UserSettingsForm, OrganisationCreationForm, LeaveOrganisationFrom, CreateCategoryForm, ChangeRankForm
 
 from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects, Category, Room, Status
 from flask_login import current_user, login_user, logout_user, login_required
@@ -338,3 +338,48 @@ def add_rank(name):
         return redirect(url_for('organisation_ranks', name=organisation.name))
 
     return render_template('create_rank.html', form=form, organisation=organisation)
+
+
+@app.route('/organisations/<name>/objects/add', methods=['GET', 'POST'])
+def add_object(name):
+    organisation = Organisation.query.filter_by(name=name).first_or_404()
+    form = CreateObjectForm()
+
+    if not current_user.in_organisation(organisation):
+        abort(404)
+
+    if form.validate_on_submit():
+        object_name = form.name.data
+        object_description = form.description.data
+        object_categories = form.categories.data
+        object_status = form.status.data
+        object_room = form.room.data
+
+        if len(object_name) > 64 or len(object_description) > 128:
+            return render_template('create_object.html', form=form, organisation=organisation)
+
+        status = Status.query.filter_by(name = object_status, organisation_id=organisation.id).first()
+        if not status:
+            status = Status(name=object_status)
+            organisation.statuses.append(status)
+
+        room = Room.query.filter_by(name = object_room).first()
+        if not room:
+            room = Room(name=object_room)
+            db.session.add(room)
+
+        categories_names = object_categories.split()
+        categories = []
+        for category_name in categories_names:
+            category = Category.query.filter_by(name=category_name, organisation_id = organisation.id).first()
+            if not category:
+                category = Category(name=category_name)
+                organisation.categories.append(category)
+            categories.append(category)
+
+        inv = InventoryObject(article=object_name, description=object_description,status=status, room=room, categories=categories, organisation=organisation)
+        organisation.add_object(inv)
+        db.session.commit()
+        return redirect(url_for('inventoryobject', org_name=organisation.name, inv_id=inv.id))
+
+    return render_template('create_object.html', form=form, organisation=organisation)

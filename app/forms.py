@@ -79,3 +79,12 @@ class CreateCategoryForm(FlaskForm):
     description = StringField()
 
     submit = SubmitField('Create')
+
+class CreateObjectForm(FlaskForm):
+    name = StringField()
+    description = StringField()
+    categories = StringField()
+    status = StringField()
+    room = StringField()
+
+    submit = SubmitField('Create')
