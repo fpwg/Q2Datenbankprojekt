@@ -104,7 +104,7 @@ def inventoryobject(org_name, inv_id):
 
     lending_history = Lend_Objects.query.filter_by(inventory_object_id=inventoryobject.id)
 
-    return render_template('inventoryobject.html', inventoryobject=inventoryobject, organisation = organisation, lending_history=lending_history)
+    return render_template('inventoryobject.html', inventoryobject=inventoryobject, organisation = organisation, lending_history=lending_history, current_user=current_user)
 
 
 @app.route('/organisations/<org_name>/categories/<cat_name>')
@@ -112,7 +112,7 @@ def category(org_name, cat_name):
     organisation = Organisation.query.filter_by(name=org_name).first_or_404()
     category = Category.query.filter_by(name=cat_name).first_or_404()
 
-    return render_template('category.html', category=category, organisation=organisation)
+    return render_template('category.html', category=category, organisation=organisation, current_user=current_user)
 
 
 @app.route('/organisations/<org_name>/statuses/<status_name>')
@@ -315,7 +315,7 @@ def add_rank(name):
     organisation = Organisation.query.filter_by(name=name).first_or_404()
     form = ChangeRankForm()
 
-    if not current_user.in_organisation(organisation) or not organisation.get_rank(current_user).edit_organisation:
+    if not current_user.in_organisation(organisation) or not organisation.get_rank(current_user).edit_organisation or not organisation.get_rank(current_user).grant_ranks:
         abort(404)
 
     if form.validate_on_submit():
@@ -383,3 +383,95 @@ def add_object(name):
         return redirect(url_for('inventoryobject', org_name=organisation.name, inv_id=inv.id))
 
     return render_template('create_object.html', form=form, organisation=organisation)
+
+
+@app.route('/organisations/<org_name>/categories/<cat_name>/delete', methods=['GET', 'POST'])
+def delete_category(org_name, cat_name):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    category = Category.query.filter_by(name=cat_name, organisation_id=organisation.id).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if not current_user.in_organisation(organisation):
+        abort(404)
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            db.session.delete(category)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+        return render_template('delete_category.html', organisation=organisation, category=category, form=form)
+
+    return render_template('delete_category.html', organisation=organisation, category=category, form=form)
+
+
+@app.route('/organisations/<org_name>/objects/<inv_id>/delete', methods=['GET', 'POST'])
+def delete_object(org_name, inv_id):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    inventoryobject = InventoryObject.query.get(inv_id)
+    form = LeaveOrganisationFrom()
+
+    if not current_user.in_organisation(organisation):
+        abort(404)
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            db.session.delete(inventoryobject)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+        return render_template('delete_object.html', organisation=organisation, inventoryobject=inventoryobject, form=form)
+
+    return render_template('delete_object.html', organisation=organisation, inventoryobject=inventoryobject, form=form)
+
+
+@app.route('/organisations/<org_name>/ranks/<rank_name>/delete', methods=['GET', 'POST'])
+def delete_rank(org_name, rank_name):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    rank = Rank.query.filter_by(name=rank_name, organisation_id=organisation.id).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if not current_user.in_organisation(organisation) or not organisation.get_rank(current_user).edit_organisation or not organisation.get_rank(current_user).grant_ranks:
+        abort(404)
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            db.session.delete(rank)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+        return render_template('delete_rank.html', organisation=organisation, rank=rank, form=form)
+
+    return render_template('delete_rank.html', organisation=organisation, rank=rank, form=form)
+
+
+@app.route('/organisations/<org_name>/statuses/<status_name>/delete', methods=['GET', 'POST'])
+def delete_status(org_name, status_name):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    status = Status.query.filter_by(name=status_name, organisation_id=organisation.id).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if not current_user.in_organisation(organisation):
+        abort(404)
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            db.session.delete(status)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+        return render_template('delete_status.html', organisation=organisation, status=status, form=form)
+
+    return render_template('delete_status.html', organisation=organisation, status=status, form=form)
+
+
+@login_required
+@app.route('/rooms/<room_name>/delete', methods=['GET', 'POST'])
+def delete_room(room_name):
+    room = Room.query.filter_by(name=room_name).first_or_404()
+    form = LeaveOrganisationFrom()
+
+    if form.validate_on_submit():
+        if form.confirm.data:
+            db.session.delete(room)
+            db.session.commit()
+            return redirect(url_for('room_list'))
+        return render_template('delete_room.html', room=room, form=form)
+
+    return render_template('delete_room.html', room=room, form=form)

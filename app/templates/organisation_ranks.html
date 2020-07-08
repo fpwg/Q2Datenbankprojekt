@@ -11,6 +11,7 @@
       <td>Name</td>
       <td>Description</td>
       <td>Permissions</td>
+      <td></td>
     </tr>
     {% for rank in organisation.ranks %}
     <tr>
@@ -35,6 +36,9 @@
             {% endif %}
           </ul>
         </td>
+        {% if organisation.get_rank(current_user).edit_organisation %}
+        <td><a href="{{ url_for('delete_rank', org_name=organisation.name, rank_name=rank.name) }}">Delete {{rank.name}}</a></td>
+        {% endif %}
     </tr>
     {% endfor %}
   </table>
