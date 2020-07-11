@@ -1,11 +1,16 @@
-from flask import render_template, redirect, url_for, request, flash, abort
+import os
+
+from flask import render_template, redirect, url_for, request, flash, abort, send_from_directory
 from app import app, db
 
-from app.forms import LoginForm, RegistrationForm, CreateObjectForm, UserSettingsForm, OrganisationCreationForm, LeaveOrganisationFrom, CreateCategoryForm, ChangeRankForm
+from app.forms import LoginForm, RegistrationForm, CSVUploadForm, CreateObjectForm, UserSettingsForm, OrganisationCreationForm, LeaveOrganisationFrom, CreateCategoryForm, ChangeRankForm
+
+from app.read_csv import put_filecontents_into_database
 
 from app.models import User, Organisation, Rank, InventoryObject, Lend_Objects, Category, Room, Status
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
+from werkzeug.utils import secure_filename
 
 from email_validator import validate_email, EmailNotValidError
 
@@ -140,7 +145,6 @@ def room(name):
 @login_required
 @app.route('/usersettings', methods=['GET', 'POST'])
 def usersettings():
-    print('a')
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
     form = UserSettingsForm()
@@ -475,3 +479,24 @@ def delete_room(room_name):
         return render_template('delete_room.html', room=room, form=form)
 
     return render_template('delete_room.html', room=room, form=form)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/organisations/<org_name>/import_csv', methods=['GET', 'POST'])
+def import_csv(org_name):
+    organisation = Organisation.query.filter_by(name=org_name).first_or_404()
+    form = CSVUploadForm()
+    if form.upload.data is not None:
+        file = form.upload.data
+        print(file)
+        if allowed_file(file.filename) and not file.filename=="":
+            filename = secure_filename(file.filename)
+            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(path)
+            put_filecontents_into_database(path, organisation)
+            db.session.commit()
+            return redirect(url_for('organisation', name=organisation.name))
+    return render_template('import_csv.html', form=form)

@@ -2,6 +2,7 @@
 
 - CSV Datei
 - Delimiter: ;
+- Kodierung: UTF-8 !!!!!!!!
 - Oben Zeile mit Benennung, was jede Spalte macht
   - **Name/Bezeichnung:**  artikel, article
   - **Ort/Raum:** room, raum, ort

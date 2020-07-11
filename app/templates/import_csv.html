@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Import a CSV File</h1>
+    <form method="post" enctype="multipart/form-data">
+      <p>
+          {{ form.upload.label }}<br>
+          {{ form.upload() }}
+      </p>
+      <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

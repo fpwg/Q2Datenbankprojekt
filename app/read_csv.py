@@ -4,7 +4,7 @@ from app.models import Room, Category, Status, InventoryObject
 
 def read_the_file(document):
     """Daten aus einer CSV-Datei einlesen"""
-    with open(document) as file:
+    with open(document, 'r', encoding="utf-8") as file:
         read = csv.reader(file, delimiter=';')
         data = []
         for row in read:
@@ -126,7 +126,7 @@ def put_categories_into_database(categories, organisation):
     #new_categories = []
     for i in categories:
         if not any(x.name == i for x in organisation.categories):
-            organisation.add_category(i)
+            organisation.add_category(i, '')
             #new_categories.append(i)
     #return new_categories
 
@@ -138,14 +138,14 @@ def put_statuses_into_database(statuses, organisation):
     #new_statuses = []
     for i in statuses:
         if not any(x.name == i for x in organisation.statuses):
-            organisation.add_status(i)
+            organisation.add_status(i,'')
             #new_statuses.append(i)
     #return new_statuses
 
 def create_object(article_list, organisation, rooms, statuses, categories, indexes):
     """Erstellen der einzufügenden Gegenstände"""
     # Objekt
-    inv = InventoryObject(article=article_list[indexes[0]], organisation_id=organisation.id)
+    inv = InventoryObject(article=article_list[indexes[0]], organisation=organisation)
     # Raum setzen
     # In Raumliste wird geschaut, welches der Raumobjekte passt
     # -> dieses wird dann dem Gegenstand hinzugefügt

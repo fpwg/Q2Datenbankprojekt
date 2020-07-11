@@ -2,3 +2,4 @@
 /venv
 **/.DS_STORE
 **/app.db
+/uploads
