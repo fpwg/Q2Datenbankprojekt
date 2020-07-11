@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 from app.models import User, Organisation
@@ -88,3 +89,7 @@ class CreateObjectForm(FlaskForm):
     room = StringField()
 
     submit = SubmitField('Create')
+
+class CSVUploadForm(FlaskForm):
+    upload = FileField('CSV-File')
+    submit = SubmitField('Upload')
